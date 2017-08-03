@@ -1,0 +1,40 @@
+sink(file="inst/jags/cor_Occ_static.jags")
+cat("
+    model {
+
+    #### Prior distributions
+    psi ~ dunif(0, 1)
+
+    alpha0 ~ ddexp(-0.5, 5)
+    alpha1 ~ dnorm(0, 0.1)T(-10, 10)
+    alpha2 ~ dnorm(0, 0.1)T(-10, 10)
+
+    xpsi[1] ~ dunif(0, 1)
+    xpsi[2] ~ dunif(0, 1)
+
+
+    ## Detection probability
+    for(jj in 1:nStops){
+      p[jj, 1] <- 0
+      logit(p[jj, 2]) <- alpha0 + alpha1 * stop[jj] + alpha2 * stop2[jj]
+    }
+
+    for (ii in 1:nRoutes) {
+
+      ## Route-level occupancy
+      z[ii] ~ dbern(psi)
+
+      ##  y: local availability at stop 1 -- 0 = locally unavailable,  1 = locally available
+      y[ii, 1] ~ dbern(xpsi[1]/(xpsi[1] + (1 - xpsi[2])))
+      h[ii, 1] ~ dbern(p[1, y[ii, 1] + 1])
+
+      ## Availability at stops 2-nStops
+      for (jj in 2:nStops) {
+        y[ii, jj] ~ dbern(xpsi[(y[ii, jj - 1] + 1)])
+        h[ii, jj] ~ dbern(p[jj, y[ii, jj] + 1])
+      } # jj
+    } # ii
+
+    }
+    ", fill=TRUE)
+sink()
