@@ -4,11 +4,13 @@
 \alias{run_static}
 \title{run_static}
 \usage{
-run_static(sim_data, nC = 3, nI = 25000, nB = 5000, nT = 10,
+run_static(sim_data, jagam.mod, nC = 3, nI = 25000, nB = 5000, nT = 10,
   Parallel = TRUE)
 }
 \arguments{
 \item{sim_data}{Data object generated from sim_data_static()}
+
+\item{jagam.mod}{Model object from mgcv::jagam()}
 
 \item{nC}{Number of chains (default = 3)}
 
@@ -23,4 +25,3 @@ run_static(sim_data, nC = 3, nI = 25000, nB = 5000, nT = 10,
 \description{
 Run single-season correlated detection model
 }
-

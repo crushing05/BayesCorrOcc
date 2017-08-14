@@ -4,10 +4,13 @@
 #' @param nRoutes Number of sample units
 #' @param nStops Number of stops within each sample unit
 #' @param alpha0 Intercept for detection model
-#' @param alpha1 Linear effect of stop number on detection probability
-#' @param alpha2 Quadratic effect of stop number on detection probability
-#' @param beta0 Log expected number of individuals at each sampling unit
-#' @param sigma Standard deviation around mean count
+#' @param alpha1 Linear effect of Xp on detection probability
+#' @param sigma1 SD of Xp
+#' @param beta0 Logit expected occupancy probability
+#' @param beta1 Linear effect of X on psi
+#' @param beta2 Quadratic effect of X on psi
+#' @param sigma2 SD of X
+#' @param sigma3 Noise
 #' @param theta Vector containing the correlation terms
 #' @param nSum Optional number of stops to aggregate
 #' @export

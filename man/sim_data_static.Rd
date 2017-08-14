@@ -5,8 +5,9 @@
 \title{sim_data_static}
 \usage{
 sim_data_static(nRoutes = 150, nStops = 50, alpha0 = -0.5,
-  alpha1 = -0.3, alpha2 = 0.2, beta0 = 0.5, beta1 = 1, sigma = 0.5,
-  theta = c(0.3, 0.75), nSum = NULL)
+  alpha1 = 0.75, sigma1 = 0.5, beta0 = -2, beta1 = 0.8, beta2 = -1,
+  sigma2 = 0.25, sigma3 = 0.05, theta = c(0.3, 0.75), sx = 0.2,
+  sy = 0.2, nSum = NULL)
 }
 \arguments{
 \item{nRoutes}{Number of sample units}
@@ -15,13 +16,19 @@ sim_data_static(nRoutes = 150, nStops = 50, alpha0 = -0.5,
 
 \item{alpha0}{Intercept for detection model}
 
-\item{alpha1}{Linear effect of stop number on detection probability}
+\item{alpha1}{Linear effect of Xp on detection probability}
 
-\item{alpha2}{Quadratic effect of stop number on detection probability}
+\item{sigma1}{SD of Xp}
 
-\item{beta0}{Log expected number of individuals at each sampling unit}
+\item{beta0}{Logit expected occupancy probability}
 
-\item{sigma}{Standard deviation around mean count}
+\item{beta1}{Linear effect of X on psi}
+
+\item{beta2}{Quadratic effect of X on psi}
+
+\item{sigma2}{SD of X}
+
+\item{sigma3}{Noise}
 
 \item{theta}{Vector containing the correlation terms}
 
@@ -30,4 +37,3 @@ sim_data_static(nRoutes = 150, nStops = 50, alpha0 = -0.5,
 \description{
 Simulation of single-season count data for the static correlated-detection N-mixture model
 }
-

@@ -11,5 +11,6 @@ Encoding: UTF-8
 LazyData: true
 Imports:
     tidyverse,
-    jagsUI
-RoxygenNote: 5.0.1
+    jagsUI,
+    mgcv
+RoxygenNote: 6.0.1
