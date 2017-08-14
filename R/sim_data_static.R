@@ -13,28 +13,42 @@
 #' @export
 
 sim_data_static <- function(nRoutes = 150, nStops = 50,
-                             alpha0 = -0.5, alpha1 = -0.3, alpha2 = 0.2,
-                             beta0 = 2, beta1 = 1.5, sigma = 0.5,
-                             theta = c(0.3, 0.75),
+                             alpha0 = -0.5, alpha1 = 0.75, sigma1 = 0.5,
+                             beta0 = -2, beta1 = 0.8, beta2 = -1,
+                             sigma2 = 0.25, sigma3 = 0.05,
+                             theta = c(0.3, 0.75), sx = 0.2, sy = 0.2,
                              nSum = NULL){
 
+  ## Lat/lon
+  xy <- data.frame(x = runif(nRoutes, -100, -70),
+                   y = runif(nRoutes, 30, 50))
+
+  sxy <- data.frame(x = (xy$x - min(xy$x))/(max(xy$x) - min(xy$x)),
+                    y = (xy$y - min(xy$y))/(max(xy$y) - min(xy$y)))
+  sigma <- cov(sxy)
 
   ## Standardize stop number
   stop <- scale(seq(1:nStops))[,1]
   stop2 <- stop^2
 
   ## Stop detection probability
-  lp <- alpha0 + alpha1 * stop + alpha2 * stop2
+  Xp <- rnorm(nRoutes, sigma1)
+  lp <- alpha0 + alpha1 * Xp#stop + alpha2 * stop2
   p <- exp(lp)/(1 + exp(lp))
 
-  ## Route-level abundance
-  eta <- rnorm(nRoutes, 0, sigma)
-  X <- rnorm(nRoutes)
-  l.psi <- beta0 + beta1 * X + eta
+  ## Route-level occupancy probability
+  X1 <- rnorm(nRoutes, sigma2)
+  X2 <- X1^2
+  eta <- rnorm(nRoutes, 0, sigma3)
+  f <- beta0 + (1/(2*pi*sx*sy*sqrt(1 - sigma[1,2]))) *
+        exp(-(1/(2*(1-sigma[1,2]^2))*
+        (sxy$x-0.5)^2/sx^2 + (sxy$y - 0.5)^2/sy^2 - (2*sigma[1,2]*(sxy$x - 0.5)*(sxy$y - 0.5))/sx*sy))
+  l.psi <- f + beta1 * X1 + beta2 * X2 + eta
   psi <- exp(l.psi)/(1 + exp(l.psi))
 
   # Route-level occupancy
   z <- rbinom(n = nRoutes, size = 1, prob = psi)
+
 
   ## Equilibrium proportion of available sites
   theta1 <- theta[1] / (theta[1] + (1 - theta[2]))
@@ -45,10 +59,10 @@ sim_data_static <- function(nRoutes = 150, nStops = 50,
 
   for(i in 1:nRoutes){
     y[i, 1] <- rbinom(n = 1, size = 1, prob = z[i] * theta1)
-    h[i, 1] <- rbinom(n = 1, size = 1, prob = y[i, 1] * p[1])
+    h[i, 1] <- rbinom(n = 1, size = 1, prob = y[i, 1] * p[i])
     for(j in 2:nStops){
       y[i, j] <- rbinom(n = 1, size = 1, prob = z[i] * theta[y[i, j - 1] + 1])
-      h[i, j] <- rbinom(n = 1, size = 1, prob = y[i, j] * p[j])
+      h[i, j] <- rbinom(n = 1, size = 1, prob = y[i, j] * p[i])
     }
   }
 
@@ -80,8 +94,11 @@ sim_data_static <- function(nRoutes = 150, nStops = 50,
     h <- h2
   }
 
-  sim_data <- list(h = h, y = y, p = p, X = X, nRoutes = nRoutes, nStops = nStops,
-                   beta0 = beta0, sigma = sigma, alpha0 = alpha0, alpha1 = alpha1, alpha2 = alpha2,
+  ## Combine covariate values in matrix
+  X1 <- cbind(X1, X2)
+
+  sim_data <- list(psi = psi, z = z, h = h, y = y, p = p, Xp = Xp, X1 = X1, xy = xy, nRoutes = nRoutes, nStops = nStops,
+                   beta0 = beta0, sigma1 = sigma1, sigma2 = sigma2, sigma3 = sigma3, alpha0 = alpha0, alpha1 = alpha1, #alpha2 = alpha2,
                    stop = stop, stop2 = stop2, theta = theta)
 
   return(sim_data)

@@ -2,3 +2,4 @@
 
 export(run_static)
 export(sim_data_static)
+export(sim_data_static2)

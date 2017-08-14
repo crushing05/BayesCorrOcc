@@ -5,7 +5,7 @@
 \title{sim_data_static}
 \usage{
 sim_data_static(nRoutes = 150, nStops = 50, alpha0 = -0.5,
-  alpha1 = -0.3, alpha2 = 0.2, beta0 = 2, beta1 = 1.5, sigma = 0.5,
+  alpha1 = -0.3, alpha2 = 0.2, beta0 = 0.5, beta1 = 1, sigma = 0.5,
   theta = c(0.3, 0.75), nSum = NULL)
 }
 \arguments{
