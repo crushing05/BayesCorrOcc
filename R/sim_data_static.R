@@ -113,7 +113,7 @@ sim_data_static <- function(nRoutes = 150, nStops = 50, nPred = 5,
 
 
   sim_data <- list(psi = psi, z = z, h = h, y = y, p = p, Xp = Xp, X = X, xy = xy, nRoutes = nRoutes, nStops = nStops,
-                   beta0 = beta0, beta = beta, sigma1 = sigma1, sigma2 = sigma2, sigma3 = sigma3, alpha0 = alpha0, alpha1 = alpha1, #alpha2 = alpha2,
+                   beta = beta, sigma1 = sigma1, sigma2 = sigma2, sigma3 = sigma3, alpha0 = alpha0, alpha1 = alpha1,
                    stop = stop, stop2 = stop2, theta = theta)
 
   return(sim_data)
