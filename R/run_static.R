@@ -31,8 +31,9 @@ run_static <- function(sim_data, jagam.mod, nC = 3, nI = 25000, nB = 5000, nT = 
                                   xpsi = runif(2, 0, 1), b = jagam.mod$jags.ini$b,
                                   lambda = jagam.mod$jags.ini$lambda)}
 
+    mod <- system.file("jags", "cor_Occ_static.jags", package = "BayesCorrOcc")
     jags.fit <- jagsUI::jags(data = jags.data, parameters.to.save = jags.params,
-                             inits = jags.inits, model.file = "inst/jags/cor_Occ_static.jags",
+                             inits = jags.inits, model.file = mod,
                              n.chains = nC, n.iter = nI, n.adapt = nB, n.burnin = nB, n.thin = nT,
                              parallel = Parallel)
     return(jags.fit)
