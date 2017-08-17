@@ -12,6 +12,7 @@
 
 run_static <- function(sim_data, jagam.mod, nC = 3, nI = 25000, nB = 5000, nT = 10, Parallel = TRUE){
 
+    ## Mu/se of priors when g == 0
     mu.est <- sim_data$beta
     se.est <- rep(0.25, dim(sim_data$X)[2])
 

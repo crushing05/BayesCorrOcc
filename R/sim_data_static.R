@@ -8,6 +8,8 @@
 #' @param sigma1 SD of Xp
 #' @param sigma2 SD of X
 #' @param sigma3 Noise
+#' @param sx SD of lon
+#' @param xy SD of lat
 #' @param theta Vector containing the correlation terms
 #' @param nSum Optional number of stops to aggregate
 #' @export
@@ -18,10 +20,11 @@ sim_data_static <- function(nRoutes = 150, nStops = 50, nPred = 5,
                              theta = c(0.3, 0.75), sx = 0.2, sy = 0.2,
                              nSum = NULL){
 
-  ## Lat/lon
+  ## Generate lat/lon
   xy <- data.frame(x = runif(nRoutes, -100, -70),
                    y = runif(nRoutes, 30, 50))
 
+  ## Scale lat/lon to 0-1 & estimate varcov matrix
   sxy <- data.frame(x = (xy$x - min(xy$x))/(max(xy$x) - min(xy$x)),
                     y = (xy$y - min(xy$y))/(max(xy$y) - min(xy$y)))
   sigma <- cov(sxy)
@@ -68,10 +71,14 @@ sim_data_static <- function(nRoutes = 150, nStops = 50, nPred = 5,
   y <- h <- matrix(NA, nrow = nRoutes, ncol = nStops)  # Stop availability & observed occupancy
 
   for(i in 1:nRoutes){
+    # Availability at stop 1, conditional on route-level occupancy
     y[i, 1] <- rbinom(n = 1, size = 1, prob = z[i] * theta1)
+    # Observation at stop 1, conditional on availability
     h[i, 1] <- rbinom(n = 1, size = 1, prob = y[i, 1] * p[i])
     for(j in 2:nStops){
+      # Availability at stop j, condtional on route-level occupancy & availability at previous stop
       y[i, j] <- rbinom(n = 1, size = 1, prob = z[i] * theta[y[i, j - 1] + 1])
+      # Observation at stop j, conditional on availability
       h[i, j] <- rbinom(n = 1, size = 1, prob = y[i, j] * p[i])
     }
   }
