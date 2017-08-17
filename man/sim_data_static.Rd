@@ -4,10 +4,9 @@
 \alias{sim_data_static}
 \title{sim_data_static}
 \usage{
-sim_data_static(nRoutes = 150, nStops = 50, alpha0 = -0.5,
-  alpha1 = 0.75, sigma1 = 0.5, beta0 = -2, beta1 = 0.8, beta2 = -1,
-  sigma2 = 0.25, sigma3 = 0.05, theta = c(0.3, 0.75), sx = 0.2,
-  sy = 0.2, nSum = NULL)
+sim_data_static(nRoutes = 150, nStops = 50, nPred = 5, alpha0 = -0.5,
+  alpha1 = 0.75, sigma1 = 0.5, sigma2 = 0.5, sigma3 = 0.05,
+  theta = c(0.3, 0.75), sx = 0.2, sy = 0.2, nSum = NULL)
 }
 \arguments{
 \item{nRoutes}{Number of sample units}
@@ -20,21 +19,18 @@ sim_data_static(nRoutes = 150, nStops = 50, alpha0 = -0.5,
 
 \item{sigma1}{SD of Xp}
 
-\item{beta0}{Logit expected occupancy probability}
-
-\item{beta1}{Linear effect of X on psi}
-
-\item{beta2}{Quadratic effect of X on psi}
-
 \item{sigma2}{SD of X}
 
 \item{sigma3}{Noise}
 
 \item{theta}{Vector containing the correlation terms}
 
+\item{sx}{SD of lon}
+
 \item{nSum}{Optional number of stops to aggregate}
+
+\item{xy}{SD of lat}
 }
 \description{
 Simulation of single-season count data for the static correlated-detection N-mixture model
 }
-

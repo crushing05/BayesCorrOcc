@@ -25,4 +25,3 @@ run_static(sim_data, jagam.mod, nC = 3, nI = 25000, nB = 5000, nT = 10,
 \description{
 Run single-season correlated detection model
 }
-
