@@ -37,3 +37,4 @@ sim_data_static(nRoutes = 150, nStops = 50, alpha0 = -0.5,
 \description{
 Simulation of single-season count data for the static correlated-detection N-mixture model
 }
+

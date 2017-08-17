@@ -2,23 +2,43 @@
     model {
 
     #### Prior distributions
+
+    ## Priors for linear indicator variables -- prob = 1 if quadratic term in model, pind otherwise
     for(ii in 1:nPred){
+      g[ii] ~ dbern(g[ii + nPred] + pind * (1 - g[ii + nPred]))
+    }
+
+
+    ## Priors for quadratic indicator variables - prob = pind
+    for(ii in (nPred + 1):(nPred * 2)){
       g[ii] ~ dbern(pind)
-      betaT[ii] ~ dnorm(0, 0.01)T(-10, 10)
+    }
+
+
+    ## Priors for betas - Normal(0, tau.beta) if g == 1; Normal(mu, 1/se^2) if g == 0
+    for(ii in 1:(nPred * 2)){
+      betaT[ii] ~ dnorm(bpriorm[ii], tprior[ii])T(-10, 10)
       beta[ii] <- g[ii] * betaT[ii]
+
+      bpriorm[ii] <- (1 - g[ii]) * mu[ii]
+      tprior[ii] <- g[ii] * tau.beta + (1 - g[ii]) * pow(se[ii], -2)
     }
 
     tau.beta <- pow(sigma.beta, -2)
     sigma.beta ~ dunif(0, 10)
     pind ~ dbeta(2, 8)
 
+    ## Detection priors
     alpha0 ~ dnorm(0, 0.1)T(-10, 10)
     alpha1 ~ dnorm(0, 0.1)T(-10, 10)
-    alpha2 ~ dnorm(0, 0.1)T(-10, 10)
 
+
+    ## Spatial correlation priors
     xpsi[1] ~ dunif(0, 1)
     xpsi[2] ~ dunif(0, 1)
 
+
+    #### GAM priors from mgcv::jagam()
 
     ## Parametric effect priors
     for (ii in 1:1) { b[ii] ~ dnorm(0,0.033) }
@@ -35,8 +55,12 @@
       rho[ii] <- log(lambda[ii])
     }
 
+
+    ## Logit predicted occupancy
     eta <- X %*% b + X1 %*% beta
 
+
+    ### Likelihood
     for (ii in 1:nRoutes) {
       ## Detection probability
       p[ii, 1] <- 0
