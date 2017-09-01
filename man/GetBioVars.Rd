@@ -4,7 +4,7 @@
 \alias{GetBioVars}
 \title{GetBioVars}
 \usage{
-GetBioVars(alpha, index = c(1, 2, 8, 12, 18), ind_name = c("tmp", "dtr",
+GetBioVars(dat, index = c(1, 2, 8, 12, 18), ind_name = c("tmp", "dtr",
   "Twet", "Prec", "Pwarm"))
 }
 \arguments{
@@ -28,3 +28,4 @@ Ind_Year The value for biovar[Ind] in year Year
 \description{
 Extract scaled annual bioclim variable values for each BBS route
 }
+

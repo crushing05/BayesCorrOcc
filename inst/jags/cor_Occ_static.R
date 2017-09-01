@@ -32,6 +32,15 @@ cat("
     ## Detection priors
     alpha0 ~ dnorm(0, 0.1)T(-10, 10)
     alpha1 ~ dnorm(0, 0.1)T(-10, 10)
+    alpha2 ~ dnorm(0, 0.1)T(-10, 10)
+
+    for(ii in 1:nObs){
+      eps[ii] ~ dnorm(0, tau.obs)
+    }
+    eps[(nObs + 1)] <- 0
+
+    tau.obs <- pow(sigma.obs, -2)
+    sigma.obs ~ dunif(0, 10)
 
 
     ## Spatial correlation priors
@@ -65,7 +74,7 @@ cat("
     for (ii in 1:nRoutes) {
       ## Detection probability
       p[ii, 1] <- 0
-      logit(p[ii, 2]) <- alpha0 + alpha1 * Xp[ii]
+      logit(p[ii, 2]) <- alpha0 + alpha1 * Xp[ii] + alpha2 * nov[ii]+ eps[obs[ii]]
 
 
       ## Route-level occupancy probability

@@ -34,41 +34,10 @@ GetBioVars <- function(dat, index = c(1, 2, 8, 12, 18),
   problem_routes <- which(is.na(rxy[, ncol(rxy)]))
   first_climate <- grep(ind_name[1], colnames(rxy))[1]
 
-  if(length(problem_routes) > 0){
-    ind <- 0
-    while(ind < 1){
-      problem_xy <- dplyr::select(dplyr::slice(rxy, problem_routes), Longitude, Latitude)
-
-      fix_routes <- problem_out <- problem_nearby <- NULL
-      adj <- c(-.5,0,.5)
-
-      for (jj in 1:length(index)) {
-        for (ii in 1:dat$nYears) {
-          for (i_lat in 1:3) {
-            for (i_lon in 1:3) {
-              mjc	<- raster::extract(NA_biovars[[ii]][[index[jj]]],
-                                     problem_xy + matrix(c(adj[i_lon], adj[i_lat]),
-                                                         nrow = length(problem_routes), ncol=2), byrow=T)
-              problem_nearby	<- cbind(problem_nearby, mjc)
-            }
-          }
-          problem_out <- rowMeans(problem_nearby, na.rm = TRUE)
-          fix_routes <- cbind(fix_routes, problem_out)
-        }
-      }
-      rxy[problem_routes, first_climate:ncol(rxy)] <- fix_routes
-      problem_routes2 <- which(is.na(rxy[, ncol(rxy)]))
-      if(length(problem_routes2) == 0 | length(problem_routes2) == length(problem_routes)){
-        ind <- 1
-        problem_routes <- problem_routes2
-      }else{
-        problem_routes <- problem_routes2
-      }
-    }
     if(length(problem_routes) > 0){
       ind <- 0
-      min.adj <- -1
-      max.adj <- 1
+      min.adj <- -0.5
+      max.adj <- 0.5
       while(ind < 1){
         problem_xy <- dplyr::select(dplyr::slice(rxy, problem_routes), Longitude, Latitude)
 
@@ -91,7 +60,7 @@ GetBioVars <- function(dat, index = c(1, 2, 8, 12, 18),
         }
         rxy[problem_routes, first_climate:ncol(rxy)] <- fix_routes
         problem_routes2 <- which(is.na(rxy[, ncol(rxy)]))
-        if(length(problem_routes2) == 0 | length(problem_routes2) == length(problem_routes)){
+        if(length(problem_routes2) == 0){
           ind <- 1
           problem_routes <- problem_routes2
         }else{
@@ -101,7 +70,6 @@ GetBioVars <- function(dat, index = c(1, 2, 8, 12, 18),
         }
       }
     }
-  }
 
 
   ### Center and scale climate variables
