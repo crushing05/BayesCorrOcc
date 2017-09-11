@@ -28,4 +28,3 @@ Ind_Year The value for biovar[Ind] in year Year
 \description{
 Extract scaled annual bioclim variable values for each BBS route
 }
-

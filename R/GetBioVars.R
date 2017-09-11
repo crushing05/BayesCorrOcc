@@ -82,9 +82,9 @@ GetBioVars <- function(dat, index = c(1, 2, 8, 12, 18),
     rxy[,grep(ind_name[ii], names(rxy))] <- (rxy[,grep(ind_name[ii], names(rxy))] - clim_scale[ii, "mean"]) / clim_scale[ii, "sd"]
   }
 
-  # write.csv(clim_scale,
-  #           paste0("inst/output/", alpha, "/clim_scale.csv"),
-  #           row.names = FALSE)
+  write.csv(clim_scale,
+            paste0("inst/output/", dat$alpha, "/clim_scale.csv"),
+            row.names = FALSE)
 
   ### Add squared climate variables
   sq_rxy <- dplyr::as_data_frame(rxy[, first_climate:ncol(rxy)] ^ 2)
@@ -92,6 +92,12 @@ GetBioVars <- function(dat, index = c(1, 2, 8, 12, 18),
   rxy <- dplyr::bind_cols(rxy, sq_rxy)
   rxy <- dplyr::select(rxy, -Latitude, -Longitude)
 
-  return(rxy)
+  biovars <- NULL
+  for(i in 1:dat$nYears){
+    tmp <- rxy[,grepl(bbs_years[i], colnames(rxy))]
+    biovars <- abind::abind(biovars, tmp, along = 3)
+  }
+
+  return(biovars)
 }
 
