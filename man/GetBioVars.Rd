@@ -4,15 +4,15 @@
 \alias{GetBioVars}
 \title{GetBioVars}
 \usage{
-GetBioVars(dat, index = c(1, 2, 8, 12, 18), ind_name = c("tmp", "dtr",
+GetBioVars(alpha, index = c(1, 2, 8, 12, 18), ind_name = c("tmp", "dtr",
   "Twet", "Prec", "Pwarm"))
 }
 \arguments{
+\item{alpha}{alpha code for species of interest}
+
 \item{index}{Integer vector containing the bioclim variables of interest}
 
 \item{ind_name}{Character vector containing abbreviated name of the bioclim variables of interest}
-
-\item{count}{Data frame containing the (buffered) count data for the focal species}
 }
 \value{
 A .csv files containing the following fields:

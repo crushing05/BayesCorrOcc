@@ -1,7 +1,7 @@
 #' GetBioVars
 #'
 #' Extract scaled annual bioclim variable values for each BBS route
-#' @param count Data frame containing the (buffered) count data for the focal species
+#' @param alpha alpha code for species of interest
 #' @param index Integer vector containing the bioclim variables of interest
 #' @param ind_name Character vector containing abbreviated name of the bioclim variables of interest
 #' @return A .csv files containing the following fields:
@@ -11,8 +11,10 @@
 #' @return   Ind_Year The value for biovar[Ind] in year Year
 #' @export
 
-GetBioVars <- function(dat, index = c(1, 2, 8, 12, 18),
+GetBioVars <- function(alpha, index = c(1, 2, 8, 12, 18),
                        ind_name = c("tmp", "dtr", "Twet", "Prec", "Pwarm")){
+
+  dat <- readRDS(paste0("inst/output/", alpha, "/bbs_data.rds"))
 
   rxy <- data.frame(Latitude = dat$lat, Longitude = dat$lon)
 
@@ -98,6 +100,6 @@ GetBioVars <- function(dat, index = c(1, 2, 8, 12, 18),
     biovars <- abind::abind(biovars, tmp, along = 3)
   }
 
-  return(biovars)
+  saveRDS(biovars, file = paste0("inst/output/", dat$alpha, "/biovars.rds"))
 }
 
