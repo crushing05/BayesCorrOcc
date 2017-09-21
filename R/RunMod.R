@@ -49,10 +49,10 @@ RunMod <- function(alpha, nI = 10000, nA = 5000, nC = 3, nT = 20, Parallel = TRU
 
   ### Fit model
   mod <- system.file("jags", "cor_Occ_dyn.jags", package = "BayesCorrOcc")
-  jags.fit <- jagsUI::jags(data = jags.data, parameters.to.save = jags.params,
+  jags.fit <- jagsUI::jags.basic(data = jags.data, parameters.to.save = jags.params,
                            inits = jags.inits, model.file = mod,
                            n.chains = nC, n.iter = nI, n.adapt = nA, n.burnin = 0, n.thin = nT,
-                           parallel = Parallel)
+                           parallel = Parallel, verbose = FALSE)
 
   ### Save output
   saveRDS(jags.fit, paste0("inst/output/", alpha, "/jags_fit.rds"))

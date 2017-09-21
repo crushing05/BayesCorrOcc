@@ -6,7 +6,7 @@
 #' @export
 
 PlotRoutes <- function(alpha){
-  dat <-  readRDS(paste0("inst/output/", alpha, "/bbs_data.rds"))
+  dat <-  readRDS(here::here(paste0("inst/output/", alpha, "/bbs_data.rds")))
 
   rts <- data.frame(Longitude = dat$lon, Latitude = dat$lat, z = apply(dat$h, 1, function(x) max(x, na.rm = TRUE)))
   obs <- dplyr::filter(rts, z == 1)
@@ -132,7 +132,7 @@ PlotPsi <- function(alpha){
 
 
 MapPsi <- function(alpha, proj = TRUE){
-  dat <-  readRDS(paste0("inst/output/", alpha, "/bbs_data.rds"))
+  dat <-  readRDS(here::here(paste0("inst/output/", alpha, "/bbs_data.rds")))
   psi <- readRDS(here::here(paste0('inst/output/', alpha, '/psi.rds')))
   indices <- read.csv(here::here(paste0('inst/output/', alpha, '/indices.csv')))
   limits <- dplyr::filter(indices, ind %in% c("s.lat", "n.lat"))
@@ -300,7 +300,7 @@ md2html <- function(filename, dest = NULL) {
 #' @export
 
 PlotIndex <- function(group_name, lat = TRUE, start.year = 1972){
-  indices <- read.csv(paste0("inst/output/indices/", group_name, ".csv"))
+  indices <- read.csv(here::here(paste0("inst/output/indices/", group_name, ".csv")))
 
   if(lat){
     indices <- dplyr::filter(indices, grepl("lat", ind) & Year >= start.year)
