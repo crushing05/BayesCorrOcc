@@ -27,7 +27,7 @@ RunMod <- function(alpha, nI = 10000, nA = 5000, nC = 3, nT = 20, Parallel = TRU
 
   ### Parameters to monitor
   jags.params <- c("xpsi", "lambda", "betaT.psi", "g.psi", "beta.gam0", "betaT.gam", "g.gam", "beta.eps0", "betaT.eps",
-                   "g.eps", "b", "alpha0", "alpha1", "alpha2", "sigma.obs", "sigma.beta", "K1", "rho", "psi", "p", "z")
+                   "g.eps", "b", "alpha0", "alpha1", "alpha2", "sigma.obs", "sigma.beta", "rho")
 
 
   ### Initial values
@@ -49,7 +49,7 @@ RunMod <- function(alpha, nI = 10000, nA = 5000, nC = 3, nT = 20, Parallel = TRU
 
   ### Fit model
   mod <- system.file("jags", "cor_Occ_dyn.jags", package = "BayesCorrOcc")
-  jags.fit <- jagsUI::jags.basic(data = jags.data, parameters.to.save = jags.params,
+  jags.fit <- jagsUI::jags(data = jags.data, parameters.to.save = jags.params,
                            inits = jags.inits, model.file = mod,
                            n.chains = nC, n.iter = nI, n.adapt = nA, n.burnin = 0, n.thin = nT,
                            parallel = Parallel, verbose = FALSE)
