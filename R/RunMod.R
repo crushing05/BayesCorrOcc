@@ -27,7 +27,7 @@ RunMod <- function(alpha, nI = 10000, nA = 5000, nC = 3, nT = 20, Parallel = TRU
 
   ### Parameters to monitor
   jags.params <- c("xpsi", "lambda", "betaT.psi", "g.psi", "beta.gam0", "betaT.gam", "g.gam", "beta.eps0", "betaT.eps",
-                   "g.eps", "b", "alpha0", "alpha1", "alpha2", "sigma.obs", "sigma.beta", "rho")
+                   "g.eps", "b", "alpha0", "alpha1", "alpha2", "sigma.obs", "sigma.beta", "rho", "omega")
 
 
   ### Initial values
