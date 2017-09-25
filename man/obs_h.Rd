@@ -4,7 +4,7 @@
 \alias{obs_h}
 \title{obs_h}
 \usage{
-obs_h(h, year)
+obs_h(h, year, sim = FALSE)
 }
 \arguments{
 \item{h}{detection history matrix}

@@ -125,7 +125,9 @@ ppc <- function(alpha){
 
   }
 
-  ppc <- list(fit = fit, fit.new = fit.new, p = sum(fit > fit.new)/length(fit))
+  fit_df = data.frame(fit = c(fit), fit.new = c(fit.new))
+  ppc <- list(fit = fit_df, p = sum(fit > fit.new)/length(fit))
+
   saveRDS(ppc, file = paste0("inst/output/", dat$alpha, "/ppc.rds"))
 }
 

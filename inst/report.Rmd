@@ -79,3 +79,10 @@ if(!is.na(spp_summ$pass)){BayesCorrOcc::PlotLon(alpha = spp_summ$spp_alpha)}
 ```
 *Figure 4: Annual change in mean breeding longitudinal*   
 
+
+```{r ppc, echo = FALSE, message = FALSE}
+BayesCorrOcc::PostCheck(alpha = spp_summ$spp_alpha)
+```
+*Figure 5: Posterior predictive check. Bayesian P-value = `r round(spp_summ$p, digits = 2)`*   
+
+

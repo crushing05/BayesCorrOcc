@@ -293,6 +293,23 @@ md2html <- function(filename, dest = NULL) {
   markdownToHTML(filename, dest, options = opts)
 }
 
+#' PlotIndex
+#'
+#' Function to plot multi-species indices of range change
+#' @export
+
+PostCheck <- function(alpha){
+  ppc <- readRDS(here::here(paste0("inst/output/", alpha, "/ppc.rds")))
+
+  ggplot(ppc$fit, aes(x = fit, y = fit.new)) + geom_point(size = 2, alpha = 0.5) +
+    geom_abline() +
+    scale_x_continuous("Discrepancy actual data") +
+    scale_y_continuous("Discrepancy replicate data") +
+    annotate("text", x = max(ppc2$fit) - 35, y = max(ppc2$fit.new) - 25, label = paste("P = ", round(ppc$p, digits = 2)))
+
+  }
+
+
 
 #' PlotIndex
 #'
@@ -345,3 +362,5 @@ PlotIndex <- function(group_name, lat = TRUE, start.year = 1972){
   p
 
 }
+
+
