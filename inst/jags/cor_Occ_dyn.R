@@ -6,9 +6,9 @@ cat("
 
     ## Priors for linear indicator variables -- prob = 1 if quadratic term in model, 0.5 otherwise
     for(ii in 1:nPred){
-      g.psi[ii] ~ dbern(0.5)#g.psi[ii + nPred] + 0.5 * (1 - g.psi[ii + nPred]))
-      g.gam[ii] ~ dbern(0.5)#g.gam[ii + nPred] + 0.5 * (1 - g.gam[ii + nPred]))
-      g.eps[ii] ~ dbern(0.5)#g.eps[ii + nPred] + 0.5 * (1 - g.eps[ii + nPred]))
+      g.psi[ii] ~ dbern(0.5)
+      g.gam[ii] ~ dbern(0.5)
+      g.eps[ii] ~ dbern(0.5)
     }
 
 

@@ -10,6 +10,14 @@ RunMod <- function(alpha, nI = 10000, nA = 5000, nC = 3, nT = 20, Parallel = TRU
   covs <- readRDS(paste0("inst/output/", alpha, "/biovars.rds"))
   inits <- readRDS(paste0("inst/output/", alpha, "/inits.rds"))
 
+  ### For inits w/ very large (i.e., likely poorly estimated), change to 0 to ensure model doesn't choke
+  inits$psi.se[abs(inits$psi.betas) > 8] <- 1
+  inits$psi.betas[abs(inits$psi.betas) > 8] <- 0
+  inits$gam.se[abs(inits$gam.betas) > 8] <- 1
+  inits$gam.betas[abs(inits$gam.betas) > 8] <- 0
+  inits$eps.se[abs(inits$eps.betas) > 8] <- 1
+  inits$eps.betas[abs(inits$eps.betas) > 8] <- 0
+
   ### Get data for GAM JAGS model
   jagam.data <- data.frame(z = rep(1, length(dat$lat)), x = dat$lon, y = dat$lat)
   jagam.mod <- mgcv::jagam(z ~ s(x, y), data = jagam.data, family = "binomial", file = "inst/jags/jagam.jags")

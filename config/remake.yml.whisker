@@ -70,7 +70,7 @@ targets:
 
 
 ## Posterior predictive check
-  inst/output/{{spp_name}}/ppc.rds
+  inst/output/{{spp_name}}/ppc.rds:
     command: ppc(I(alpha == "{{spp_name}}"))
     depends:
       - inst/output/{{spp_name}}/jags_fit.rds
