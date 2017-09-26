@@ -4,7 +4,7 @@
 #' @param alpha alpha code for species of interest
 #' @export
 
-RunMod <- function(alpha, nI = 10000, nA = 5000, nC = 3, nT = 20, Parallel = TRUE){
+RunMod <- function(alpha, nI = 20000, nA = 5000, nC = 3, nT = 20, Parallel = TRUE){
   ### Read data
   dat <-  readRDS(paste0("inst/output/", alpha, "/bbs_data.rds"))
   covs <- readRDS(paste0("inst/output/", alpha, "/biovars.rds"))
@@ -59,7 +59,7 @@ RunMod <- function(alpha, nI = 10000, nA = 5000, nC = 3, nT = 20, Parallel = TRU
   mod <- system.file("jags", "cor_Occ_dyn.jags", package = "BayesCorrOcc")
   jags.fit <- jagsUI::jags(data = jags.data, parameters.to.save = jags.params,
                            inits = jags.inits, model.file = mod,
-                           n.chains = nC, n.iter = nI, n.adapt = nA, n.burnin = 0, n.thin = nT,
+                           n.chains = nC, n.iter = nI, n.adapt = nA, n.burnin = 2500, n.thin = nT,
                            parallel = Parallel, verbose = FALSE)
 
   ### Save output
