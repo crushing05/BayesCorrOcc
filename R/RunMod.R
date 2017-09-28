@@ -4,7 +4,7 @@
 #' @param alpha alpha code for species of interest; if NULL, runs model in parallel for all species
 #' @export
 
-RunMod <- function(spp = NULL, alpha = NULL, nI = 250, nA = 100, nC = 3, nT = 5, Parallel = TRUE){
+RunMod <- function(spp = NULL, alpha = NULL, nI = 250, nA = 100, nC = 2, nT = 5, Parallel = FALSE){
   if(!is.null(spp)){
 
 
