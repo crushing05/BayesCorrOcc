@@ -103,8 +103,8 @@ GetInits <- function(alpha = NULL){
                                                      noderived = TRUE, limit.real = TRUE,
                                                      modname = paste0("inits_", spp_list$spp[i]))
 
-                         suppressMessages(file.rename(from = paste0("pres_inits_", spp_list$spp[i], ".out"),
-                                                      to = paste0("inst/output/", spp_list$spp[i], "/inits.out")))
+                         suppressMessages(file.rename(from = paste0("pres_inits_", tolower(spp_list$spp[i]), ".out"),
+                                                      to = paste0("inst/output/", toupper(spp_list$spp[i]), "/inits.out")))
 
                          inits <- suppressWarnings(GetBetas(alpha = spp_list$spp[i]))
                          saveRDS(inits, paste0("inst/output/", spp_list$spp[i], "/inits.rds"))

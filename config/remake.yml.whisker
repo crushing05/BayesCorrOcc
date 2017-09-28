@@ -61,6 +61,7 @@ targets:
 {{#spp_names}}
       - inst/output/{{spp_name}}/biovars.rds
 {{/spp_names}}
+    quiet: TRUE
 
 
 ## Run models
