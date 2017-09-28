@@ -4,7 +4,10 @@
 \alias{GetInits}
 \title{GetInits}
 \usage{
-GetInits(alpha)
+GetInits(alpha = NULL)
+}
+\arguments{
+\item{alpha}{four letter alpha code for species of interest; if NULL, runs Presence model for all species in parallel}
 }
 \description{
 Estimate model coefficients in Presence; save output for mu/se values & inits

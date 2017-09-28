@@ -4,7 +4,7 @@
 \alias{ppc}
 \title{ppc}
 \usage{
-ppc(alpha)
+ppc(spp = NULL, alpha = NULL)
 }
 \arguments{
 \item{alpha}{alpha code for species of interest}

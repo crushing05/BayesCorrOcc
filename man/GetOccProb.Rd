@@ -4,9 +4,11 @@
 \alias{GetOccProb}
 \title{GetOccProb}
 \usage{
-GetOccProb(alpha, buff_method = "rec", Write = TRUE)
+GetOccProb(spp = NULL, alpha = NULL)
 }
 \arguments{
+\item{spp}{Vector containing alpha codes for all species of interest}
+
 \item{alpha}{Four letter alpha code for species of interest}
 }
 \description{

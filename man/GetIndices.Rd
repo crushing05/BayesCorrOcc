@@ -4,7 +4,7 @@
 \alias{GetIndices}
 \title{GetIndices}
 \usage{
-GetIndices(alpha)
+GetIndices(spp = NULL, alpha = NULL)
 }
 \arguments{
 \item{alpha}{Vector of alpha codes for species of interest}

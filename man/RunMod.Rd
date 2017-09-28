@@ -4,10 +4,11 @@
 \alias{RunMod}
 \title{RunMod}
 \usage{
-RunMod(alpha, nI = 20000, nA = 5000, nC = 3, nT = 20, Parallel = TRUE)
+RunMod(spp = NULL, alpha = NULL, nI = 250, nA = 100, nC = 3, nT = 5,
+  Parallel = TRUE)
 }
 \arguments{
-\item{alpha}{alpha code for species of interest}
+\item{alpha}{alpha code for species of interest; if NULL, runs model in parallel for all species}
 }
 \description{
 Run model

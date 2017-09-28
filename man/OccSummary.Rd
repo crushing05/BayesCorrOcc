@@ -4,10 +4,12 @@
 \alias{OccSummary}
 \title{OccSummary}
 \usage{
-OccSummary(alpha)
+OccSummary(spp = NULL, alpha = NULL)
 }
 \arguments{
-\item{alpha}{Vector of alpha codes for species of interest}
+\item{spp}{Vector containing alpha codes for all species of interest}
+
+\item{alpha}{Four letter alpha code for species of interest}
 }
 \value{
 Data frame containing annual estimates of the following indices:
