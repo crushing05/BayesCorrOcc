@@ -9,6 +9,7 @@ packages:
   - knitr
   - markdown
   - BBS.tenstop
+  - foreach
 
 targets:
   all:
@@ -19,9 +20,6 @@ targets:
 
 
 ## Data used for all species
-  NA_biovars:
-    command: data(target_name)
-
   bbs:
     command: get_BBS10()
 
@@ -52,54 +50,44 @@ targets:
     command: GetBioVars(I(alpha = "{{spp_name}}"))
     depends:
       - inst/output/{{spp_name}}/bbs_data.rds
-
+{{/spp_names}}
 
 
 ## Get initial values from Presence
-  inst/output/{{spp_name}}/inits.rds:
-    command: GetInits(I(alpha = "{{spp_name}}"))
+  inits:
+    command: GetInits()
     depends:
+      - inst/spp_list.csv
+{{#spp_names}}
       - inst/output/{{spp_name}}/biovars.rds
+{{/spp_names}}
 
 
 ## Run models
-  inst/output/{{spp_name}}/jags_fit.rds:
-    command: RunMod(I(alpha = "{{spp_name}}", nI = 100, nA = 25, nC = 1, nT = 5))
-    depends:
-      - inst/output/{{spp_name}}/inits.rds
+  run_mods:
+    command: RunMod(spp = inits)
+
+  run_ppc:
+    command: ppc(spp = run_mods)
 
 
-## Posterior predictive check
-  inst/output/{{spp_name}}/ppc.rds:
-    command: ppc(I(alpha == "{{spp_name}}"))
-    depends:
-      - inst/output/{{spp_name}}/jags_fit.rds
+## Get indices
+  occ_run:
+    command: GetOccProb(spp = run_ppc)
 
 
-## Generate indices
-
-  inst/output/{{spp_name}}/occ.rds:
-    command: GetOccProb(I(alpha = "{{spp_name}}"))
-    depends:
-      - inst/output/{{spp_name}}/jags_fit.rds
+  occ_summary:
+    command: OccSummary(spp = occ_run)
 
 
-  inst/output/{{spp_name}}/psi.rds:
-    command: OccSummary(I(alpha = "{{spp_name}}"))
-    depends:
-      - inst/output/{{spp_name}}/occ.rds
+  indices:
+    command: GetIndices(spp = occ_summary)
 
-
-  inst/output/{{spp_name}}/indices.csv:
-    command: GetIndices(I(alpha = "{{spp_name}}"))
-    depends:
-      - inst/output/{{spp_name}}/psi.rds
-
-
+{{#spp_names}}
   {{spp_name}}:
     command: GetSummary(I(alpha = "{{spp_name}}"))
     depends:
-      - inst/output/{{spp_name}}/indices.csv
+      - indices
 
 
 ## Generate reports
@@ -110,7 +98,7 @@ targets:
     depends:
       - spp_summ: {{spp_name}}
       - R/figures.R
-      - inst/output/{{spp_name}}/indices.csv
+      - indices
     cleanup_level: purge
 
   inst/reports/{{spp_name}}.html:

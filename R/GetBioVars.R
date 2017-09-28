@@ -50,7 +50,7 @@ GetBioVars <- function(alpha, index = c(1, 2, 8, 12, 18),
           for (ii in 1:dat$nYears) {
             for (i_lat in 1:3) {
               for (i_lon in 1:3) {
-                mjc	<- raster::extract(NA_biovars[[ii]][[index[jj]]],
+                mjc	<- raster::extract(BayesCorrOcc::NA_biovars[[ii]][[index[jj]]],
                                        problem_xy + matrix(c(adj[i_lon], adj[i_lat]),
                                                            nrow = length(problem_routes), ncol=2), byrow=T)
                 problem_nearby	<- cbind(problem_nearby, mjc)

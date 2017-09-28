@@ -305,7 +305,8 @@ PostCheck <- function(alpha){
     geom_abline() +
     scale_x_continuous("Discrepancy actual data") +
     scale_y_continuous("Discrepancy replicate data") +
-    annotate("text", x = max(ppc2$fit) - 35, y = max(ppc2$fit.new) - 25, label = paste("P = ", round(ppc$p, digits = 2)))
+    annotate("text", x = max(ppc$fit$fit) * 0.9, y = max(ppc$fit$fit.new) * 0.9,
+             label = paste("p = ", round(ppc$p, digits = 2)), size = 10)
 
   }
 

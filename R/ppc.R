@@ -5,35 +5,174 @@
 #' @return Bayesian p-value
 #' @export
 
-ppc <- function(alpha){
-  ### Read data & fitted model object
-  dat <-  readRDS(paste0("inst/output/", alpha, "/bbs_data.rds"))
-  mod <- readRDS(paste0("inst/output/", alpha, "/jags_fit.rds"))
-  bio <- readRDS(paste0("inst/output/", alpha, "/biovars.rds"))
+ppc <- function(spp = NULL, alpha = NULL){
+  if(!is.null(spp)){
+    ### Register cores
+    cores <- parallel::detectCores()
+    if(length(spp) < cores) cores <- length(spp)
+    doParallel::registerDoParallel(cores = cores)
 
-  ### Get lat/lon splines
-  jagam.data <- data.frame(z = rep(1, length(dat$lat)), x = dat$lon, y = dat$lat)
-  jagam.mod <- mgcv::jagam(z ~ s(x, y), data = jagam.data, family = "binomial", file = "inst/jags/jagam.jags")
+    ### Run posterior predictive checks in parallel
+    ppc_run <- foreach::foreach(i = 1:length(spp), .combine = c,
+                                 .packages = c("dplyr", "BayesCorrOcc")) %dopar%{
 
-  ### Empty matrices to store observed and simulated X2 estimates
-  fit <- matrix(numeric(length = mod$mcmc.info$n.samples*dat$nYears), nrow = dat$nYears)
-  fit.new <- matrix(numeric(length = mod$mcmc.info$n.samples*dat$nYears), nrow = dat$nYears)
+          ### Read data & fitted model object
+          dat <-  readRDS(paste0("inst/output/", spp[i], "/bbs_data.rds"))
+          mod <- readRDS(paste0("inst/output/", spp[i], "/jags_fit.rds"))
+          bio <- readRDS(paste0("inst/output/", spp[i], "/biovars.rds"))
 
-  ### Store annual psi estimats for each route
-  PSI <- array(dim = c(dat$nRoutes, dat$nYears, mod$mcmc.info$n.samples))
+          ### Get lat/lon splines
+          jagam.data <- data.frame(z = rep(1, length(dat$lat)), x = dat$lon, y = dat$lat)
+          jagam.mod <- mgcv::jagam(z ~ s(x, y), data = jagam.data, family = "binomial", file = "inst/jags/jagam.jags")
 
-  ### Fit in year 1
-  ## Observed # of routes w/ each possible detection history
-  obs_hist <- BayesCorrOcc::obs_h(dat$h, 1)
+          ### Empty matrices to store observed and simulated X2 estimates
+          fit <- matrix(numeric(length = mod$mcmc.info$n.samples*dat$nYears), nrow = dat$nYears)
+          fit.new <- matrix(numeric(length = mod$mcmc.info$n.samples*dat$nYears), nrow = dat$nYears)
 
-  ### For each posterior sample...
-  for(i in 1:mod$mcmc.info$n.samples){
-    ### Matrix to store simulated detection histories
-    sim_h <- matrix(NA, nrow = dat$nRoutes, ncol = 5)
+          ### Store annual psi estimats for each route
+          PSI <- array(dim = c(dat$nRoutes, dat$nYears, mod$mcmc.info$n.samples))
+
+          ### Fit in year 1
+          ## Observed # of routes w/ each possible detection history
+          obs_hist <- BayesCorrOcc::obs_h(dat$h, 1)
+
+          ### For each posterior sample...
+          for(ii in 1:mod$mcmc.info$n.samples){
+            ### Matrix to store simulated detection histories
+            sim_h <- matrix(NA, nrow = dat$nRoutes, ncol = 5)
+
+            ### For each route, estimate psi and p
+            PSI[, 1, ii] <- plogis(jagam.mod$jags.data$X %*% mod$sims.list$b[ii,] +
+                                    bio[,,1] %*% (mod$sims.list$g.psi[ii,] * mod$sims.list$betaT.psi[ii,]))
+            p1 <- plogis(mod$sims.list$alpha0[ii] + mod$sims.list$alpha1[ii] * dat$wind[, 1] +
+                           mod$sims.list$alpha2[ii] * dat$nov[, 1] + mod$sims.list$omega[dat$obs[, 1]])
+
+            ### Estimate expected prob for each possible detection history|psi, p, xpsi
+            exp_pr <- BayesCorrOcc::y_probs(psi = PSI[obs_hist$no_hist, 1, ii], xpsi = mod$sims.list$xpsi[ii,], p = p1[obs_hist$no_hist])
+
+            ### Equilibrium stop-level availability
+            pi <- mod$sims.list$xpsi[ii, 1] / (mod$sims.list$xpsi[ii, 1] + 1 - mod$sims.list$xpsi[ii, 2])
+
+            ### Simulated availability and detection histories
+            sim_y <- matrix(nrow = dat$nRoutes, ncol = 5)
+            sim_h <- matrix(nrow = dat$nRoutes, ncol = 5)
+
+            ### Simulate route-level occupancy|psi
+            z.new <- rbinom(n = dat$nRoutes, size = 1, prob = PSI[, 1, ii])
+
+            ### Simulate stop-level availability|z.new, xpsi
+            sim_y[, 1] <- rbinom(n = dat$nRoutes, size = 1, prob = z.new * pi)
+            sim_h[, 1] <- rbinom(n = dat$nRoutes, size = 1, prob = sim_y[, 1] * p1)
+            for(k in 2:5){
+              sim_y[, k] <- rbinom(n = dat$nRoutes, size = 1, prob = z.new * mod$sims.list$xpsi[ii, (sim_y[, k - 1] + 1)])
+              sim_h[, k] <- rbinom(n = dat$nRoutes, size = 1, prob = sim_y[, k] * p1)
+            }
+
+            ### Counts of each possible detection history of simulated histories
+            sim_hist <- BayesCorrOcc::obs_h(sim_h[obs_hist$no_hist,], sim = TRUE)
+
+            ### Expected counts of each possible detection history
+            exp_h <- apply(exp_pr, 2, sum)
+
+            ### Observed & simulated X2 statistics
+            fit[1, ii] <- sum((obs_hist$obs_h - exp_h)^2/exp_h)
+            fit.new[1, ii] <- sum((sim_hist - exp_h)^2/exp_h)
+          }
+
+
+          ### Fit for years 2 - nYears
+          for(t in 2:dat$nYears){
+            ## Observed # of routes w/ each possible detection history
+            obs_hist <- BayesCorrOcc::obs_h(dat$h, t)
+
+
+            ### For each posterior sample...
+            for(ii in 1:mod$mcmc.info$n.samples){
+              ### Matrices to store expected and simulated detection histories
+              exp_pr <- matrix(NA, nrow = dat$nRoutes, ncol = 32)
+              sim_h <- matrix(NA, nrow = dat$nRoutes, ncol = 5)
+
+              ### For each route, estimate gamma, epsilon, psi and p
+              gamma <- plogis(mod$sims.list$beta.gam0[ii] + bio[,,t] %*% (mod$sims.list$g.gam[ii,] * mod$sims.list$betaT.gam[ii,]))
+              epsilon <- plogis(mod$sims.list$beta.eps[ii] + bio[,,t] %*% (mod$sims.list$g.eps[ii,] * mod$sims.list$betaT.eps[ii,]))
+
+              PSI[, t, ii] <- PSI[, t - 1, ii] * epsilon + (1 - PSI[, t - 1, ii]) * gamma
+              p1 <- plogis(mod$sims.list$alpha0[ii] + mod$sims.list$alpha1[ii] * dat$wind[, t] +
+                             mod$sims.list$alpha2[ii] * dat$nov[, t] + mod$sims.list$omega[dat$obs[, t]])
+
+              ### Estimate expected prob for each possible detection history|psi, p, xpsi
+              exp_pr <- BayesCorrOcc::y_probs(psi = PSI[obs_hist$no_hist, t, ii], xpsi = mod$sims.list$xpsi[ii,], p = p1[obs_hist$no_hist])
+
+              ### Equilibrium stop-level availability
+              pi <- mod$sims.list$xpsi[ii, 1] / (mod$sims.list$xpsi[ii, 1] + 1 - mod$sims.list$xpsi[ii, 2])
+
+              ### Simulated availability and detection histories
+              sim_y <- matrix(nrow = dat$nRoutes, ncol = 5)
+              sim_h <- matrix(nrow = dat$nRoutes, ncol = 5)
+
+              ### Simulate route-level occupancy|psi
+              z.new <- rbinom(n = dat$nRoutes, size = 1, prob = PSI[, t, ii])
+
+              ### Simulate stop-level availability|z.new, xpsi
+              sim_y[, 1] <- rbinom(n = dat$nRoutes, size = 1, prob = z.new * pi)
+              sim_h[, 1] <- rbinom(n = dat$nRoutes, size = 1, prob = sim_y[, 1] * p1)
+              for(k in 2:5){
+                sim_y[, k] <- rbinom(n = dat$nRoutes, size = 1, prob = z.new * mod$sims.list$xpsi[ii, (sim_y[, k - 1] + 1)])
+                sim_h[, k] <- rbinom(n = dat$nRoutes, size = 1, prob = sim_y[, k] * p1)
+              }
+
+
+              ### Counts of each possible detection history of simulated histories
+              sim_hist <- BayesCorrOcc::obs_h(sim_h[obs_hist$no_hist,], sim = TRUE)
+
+              ### Expected counts of each possible detection history
+              exp_h <- apply(exp_pr, 2, sum)
+
+              ### Observed & simulated X2 statistics
+              fit[t, ii] <- sum((obs_hist$obs_h - exp_h)^2/exp_h)
+              fit.new[t, ii] <- sum((sim_hist - exp_h)^2/exp_h)
+        }
+
+    }
+
+    fit_df = data.frame(fit = c(fit), fit.new = c(fit.new))
+    ppc <- list(fit = fit_df, p = sum(fit > fit.new)/length(fit))
+
+    saveRDS(ppc, file = paste0("inst/output/", spp[i], "/ppc.rds"))
+    return(spp[i])
+    }
+   return(ppc_run)
+  }
+
+  if(!is.null(alpha)){
+    ### Read data & fitted model object
+    dat <-  readRDS(paste0("inst/output/", alpha, "/bbs_data.rds"))
+    mod <- readRDS(paste0("inst/output/", alpha, "/jags_fit.rds"))
+    bio <- readRDS(paste0("inst/output/", alpha, "/biovars.rds"))
+
+    ### Get lat/lon splines
+    jagam.data <- data.frame(z = rep(1, length(dat$lat)), x = dat$lon, y = dat$lat)
+    jagam.mod <- mgcv::jagam(z ~ s(x, y), data = jagam.data, family = "binomial", file = "inst/jags/jagam.jags")
+
+    ### Empty matrices to store observed and simulated X2 estimates
+    fit <- matrix(numeric(length = mod$mcmc.info$n.samples*dat$nYears), nrow = dat$nYears)
+    fit.new <- matrix(numeric(length = mod$mcmc.info$n.samples*dat$nYears), nrow = dat$nYears)
+
+    ### Store annual psi estimats for each route
+    PSI <- array(dim = c(dat$nRoutes, dat$nYears, mod$mcmc.info$n.samples))
+
+    ### Fit in year 1
+    ## Observed # of routes w/ each possible detection history
+    obs_hist <- BayesCorrOcc::obs_h(dat$h, 1)
+
+    ### For each posterior sample...
+    for(i in 1:mod$mcmc.info$n.samples){
+      ### Matrix to store simulated detection histories
+      sim_h <- matrix(NA, nrow = dat$nRoutes, ncol = 5)
 
       ### For each route, estimate psi and p
       PSI[, 1, i] <- plogis(jagam.mod$jags.data$X %*% mod$sims.list$b[i,] +
-                       bio[,,1] %*% (mod$sims.list$g.psi[i,] * mod$sims.list$betaT.psi[i,]))
+                              bio[,,1] %*% (mod$sims.list$g.psi[i,] * mod$sims.list$betaT.psi[i,]))
       p1 <- plogis(mod$sims.list$alpha0[i] + mod$sims.list$alpha1[i] * dat$wind[, 1] +
                      mod$sims.list$alpha2[i] * dat$nov[, 1] + mod$sims.list$omega[dat$obs[, 1]])
 
@@ -51,36 +190,36 @@ ppc <- function(alpha){
       z.new <- rbinom(n = dat$nRoutes, size = 1, prob = PSI[, 1, i])
 
       ### Simulate stop-level availability|z.new, xpsi
-        sim_y[, 1] <- rbinom(n = dat$nRoutes, size = 1, prob = z.new * pi)
-        sim_h[, 1] <- rbinom(n = dat$nRoutes, size = 1, prob = sim_y[, 1] * p1)
-        for(k in 2:5){
-          sim_y[, k] <- rbinom(n = dat$nRoutes, size = 1, prob = z.new * mod$sims.list$xpsi[i, (sim_y[, k - 1] + 1)])
-          sim_h[, k] <- rbinom(n = dat$nRoutes, size = 1, prob = sim_y[, k] * p1)
-        }
+      sim_y[, 1] <- rbinom(n = dat$nRoutes, size = 1, prob = z.new * pi)
+      sim_h[, 1] <- rbinom(n = dat$nRoutes, size = 1, prob = sim_y[, 1] * p1)
+      for(k in 2:5){
+        sim_y[, k] <- rbinom(n = dat$nRoutes, size = 1, prob = z.new * mod$sims.list$xpsi[i, (sim_y[, k - 1] + 1)])
+        sim_h[, k] <- rbinom(n = dat$nRoutes, size = 1, prob = sim_y[, k] * p1)
+      }
 
-    ### Counts of each possible detection history of simulated histories
-    sim_hist <- BayesCorrOcc::obs_h(sim_h[obs_hist$no_hist,], sim = TRUE)
+      ### Counts of each possible detection history of simulated histories
+      sim_hist <- BayesCorrOcc::obs_h(sim_h[obs_hist$no_hist,], sim = TRUE)
 
-    ### Expected counts of each possible detection history
-    exp_h <- apply(exp_pr, 2, sum)
+      ### Expected counts of each possible detection history
+      exp_h <- apply(exp_pr, 2, sum)
 
-    ### Observed & simulated X2 statistics
-    fit[1, i] <- sum((obs_hist$obs_h - exp_h)^2/exp_h)
-    fit.new[1, i] <- sum((sim_h2 - exp_h)^2/exp_h)
-  }
-
-
-  ### Fit for years 2 - nYears
-  for(t in 2:dat$nYears){
-    ## Observed # of routes w/ each possible detection history
-    obs_hist <- BayesCorrOcc::obs_h(dat$h, t)
+      ### Observed & simulated X2 statistics
+      fit[1, i] <- sum((obs_hist$obs_h - exp_h)^2/exp_h)
+      fit.new[1, i] <- sum((sim_hist - exp_h)^2/exp_h)
+    }
 
 
-    ### For each posterior sample...
-    for(i in 1:mod$mcmc.info$n.samples){
-      ### Matrices to store expected and simulated detection histories
-      exp_pr <- matrix(NA, nrow = dat$nRoutes, ncol = 32)
-      sim_h <- matrix(NA, nrow = dat$nRoutes, ncol = 5)
+    ### Fit for years 2 - nYears
+    for(t in 2:dat$nYears){
+      ## Observed # of routes w/ each possible detection history
+      obs_hist <- BayesCorrOcc::obs_h(dat$h, t)
+
+
+      ### For each posterior sample...
+      for(i in 1:mod$mcmc.info$n.samples){
+        ### Matrices to store expected and simulated detection histories
+        exp_pr <- matrix(NA, nrow = dat$nRoutes, ncol = 32)
+        sim_h <- matrix(NA, nrow = dat$nRoutes, ncol = 5)
 
         ### For each route, estimate gamma, epsilon, psi and p
         gamma <- plogis(mod$sims.list$beta.gam0[i] + bio[,,t] %*% (mod$sims.list$g.gam[i,] * mod$sims.list$betaT.gam[i,]))
@@ -112,23 +251,25 @@ ppc <- function(alpha){
         }
 
 
-      ### Counts of each possible detection history of simulated histories
-      sim_hist <- BayesCorrOcc::obs_h(sim_h[obs_hist$no_hist,], sim = TRUE)
+        ### Counts of each possible detection history of simulated histories
+        sim_hist <- BayesCorrOcc::obs_h(sim_h[obs_hist$no_hist,], sim = TRUE)
 
-      ### Expected counts of each possible detection history
-      exp_h <- apply(exp_pr, 2, sum)
+        ### Expected counts of each possible detection history
+        exp_h <- apply(exp_pr, 2, sum)
 
-      ### Observed & simulated X2 statistics
-      fit[t, i] <- sum((obs_hist$obs_h - exp_h)^2/exp_h)
-      fit.new[t, i] <- sum((sim_h2 - exp_h)^2/exp_h)
+        ### Observed & simulated X2 statistics
+        fit[t, i] <- sum((obs_hist$obs_h - exp_h)^2/exp_h)
+        fit.new[t, i] <- sum((sim_hist - exp_h)^2/exp_h)
+      }
+
     }
 
+    fit_df = data.frame(fit = c(fit), fit.new = c(fit.new))
+    ppc <- list(fit = fit_df, p = sum(fit > fit.new)/length(fit))
+
+    saveRDS(ppc, file = paste0("inst/output/", dat$alpha, "/ppc.rds"))
   }
 
-  fit_df = data.frame(fit = c(fit), fit.new = c(fit.new))
-  ppc <- list(fit = fit_df, p = sum(fit > fit.new)/length(fit))
-
-  saveRDS(ppc, file = paste0("inst/output/", dat$alpha, "/ppc.rds"))
 }
 
 

@@ -27,9 +27,7 @@ BayesCorrOcc::PlotRoutes(spp_summ$spp_alpha)
 ## Results
 
 ```{r g, echo=FALSE, comment='', results='asis'}
-if(!is.na(spp_summ$pass)){kable(spp_summ$g.tab, "markdown", align="c", padding=2)}else{
-  kable(data.frame(Error = "Model did not pass posterior predictive checks"), format = "markdown", align="c")
-}
+kable(spp_summ$g.tab, "markdown", align="c", padding=2)
 ```
 *Table 1: Indicator variable posterior means for 10 climate covariates included in the initial occupancy ($\psi$), colonization ($\gamma$), and extinction ($\epsilon$) models*  
 
@@ -37,9 +35,7 @@ if(!is.na(spp_summ$pass)){kable(spp_summ$g.tab, "markdown", align="c", padding=2
 &nbsp;
 
 ```{r betas, echo=FALSE, comment='', results='asis'}
-if(!is.na(spp_summ$pass)){kable(spp_summ$psi.betas, "markdown", align="c", padding=2)}else{
-  kable(data.frame(Error = "Model did not pass posterior predictive checks"), format = "markdown", align="c")
-}
+kable(spp_summ$psi.betas, "markdown", align="c", padding=2)
 ```
 *Table 2: Estimated coefficients (and 95% credible intervals) for the probability of occupancy ($\psi$), the probability of colonization ($\gamma$), & the probability of extinction ($\epsilon$). All coefficients are on the logit scale*  
 
@@ -49,14 +45,14 @@ if(!is.na(spp_summ$pass)){kable(spp_summ$psi.betas, "markdown", align="c", paddi
 
 
 ```{r betas2, echo=FALSE, comment='', results='asis'}
-if(!is.na(spp_summ$pass)){kable(spp_summ$p.betas, "markdown", align="c", padding=2)}
+kable(spp_summ$p.betas, "markdown", align="c", padding=2)
 ```
 *Table 3: Estimated coefficients (and 95% credible intervals) for the detection model and the spatial correlation terms ($\theta$ & $\theta'$). All coefficients are on the logit scale*  
 
 
 ## Occupancy probability
 ```{r psi_map, echo = FALSE, message = FALSE, fig.height=12}
-if(!is.na(spp_summ$pass)){BayesCorrOcc::MapDiff(alpha = spp_summ$spp_alpha)}
+BayesCorrOcc::MapDiff(alpha = spp_summ$spp_alpha)
 ```
 *Figure 2: Probability of occupancy and difference in occupancy probability betwen the first and last years included in the analysis*
 
@@ -65,7 +61,7 @@ if(!is.na(spp_summ$pass)){BayesCorrOcc::MapDiff(alpha = spp_summ$spp_alpha)}
 &nbsp;
 
 ```{r lat_indices, echo = FALSE, message = FALSE}
-if(!is.na(spp_summ$pass)){BayesCorrOcc::PlotLat(alpha = spp_summ$spp_alpha)}
+BayesCorrOcc::PlotLat(alpha = spp_summ$spp_alpha)
 ```
 *Figure 3: Annual change in latitude indices. Solid line shows estimated mean breeding latitude in each year. Long dash lines show the estimated 25th and 75th occupancy percentiles (i.e., core breeding range). Short dash lines show the estimated 5th and 95th occupancy percentiles (i.e., range limits)*   
 
@@ -75,7 +71,7 @@ if(!is.na(spp_summ$pass)){BayesCorrOcc::PlotLat(alpha = spp_summ$spp_alpha)}
 
 
 ```{r lon_indices, echo = FALSE, message = FALSE}
-if(!is.na(spp_summ$pass)){BayesCorrOcc::PlotLon(alpha = spp_summ$spp_alpha)}
+BayesCorrOcc::PlotLon(alpha = spp_summ$spp_alpha)
 ```
 *Figure 4: Annual change in mean breeding longitudinal*   
 

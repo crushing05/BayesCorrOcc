@@ -1,28 +1,81 @@
 #' GetOccProb
 #'
 #' Predict annual probability of occupancy using parameter estimates from top model
+#' @param spp Vector containing alpha codes for all species of interest
 #' @param alpha Four letter alpha code for species of interest
 #' @export
 
-GetOccProb <- function(alpha, buff_method = "rec", Write = TRUE){
-  ## Read count data
-  dat <-  readRDS(paste0("inst/output/", alpha, "/bbs_data.rds"))
+GetOccProb <- function(spp = NULL, alpha = NULL){
+  if(!is.null(spp)){
+    ### Register cores
+    cores <- parallel::detectCores()
+    if(length(spp) < cores) cores <- length(spp)
+    doParallel::registerDoParallel(cores = cores)
 
-  ## Read jags output
-  sim_list <- readRDS(paste0("inst/output/", alpha, "/jags_fit.rds"))
+    ### Run posterior predictive checks in parallel
+    occ_run <- foreach::foreach(i = 1:length(spp), .combine = c,
+                                .packages = c("dplyr", "BayesCorrOcc")) %dopar%{
+                                  ## Read count data
+                                  dat <-  readRDS(paste0("inst/output/", spp[i], "/bbs_data.rds"))
 
-  years <- seq(from = dat$start_year, to = dat$end_year)
+                                  ## Read jags output
+                                  sim_list <- readRDS(paste0("inst/output/", spp[i], "/jags_fit.rds"))
 
-  ## Get climate values for all cells/years
-  covs <- raster.to.array(alpha, years)
+                                  years <- seq(from = dat$start_year, to = dat$end_year)
 
-  ## Get model matrix for s(lat, lon) of raster cells
-  xy <- data.frame(lon = covs$xy$x, lat = covs$xy$y)
-  org.data <- data.frame(z = rep(1, length(dat$lat)), lon = dat$lon, lat = dat$lat)
-  org.mod <- mgcv::gam(z ~ s(lon, lat), data = org.data, family = "binomial")
-  X <- predict(object = org.mod, type = "lpmatrix", newdata = xy)
+                                  ## Get climate values for all cells/years
+                                  covs <- raster.to.array(alpha = spp[i], years)
 
-  ## For each posterior sample, estimate occupancy for each cell
+                                  ## Get model matrix for s(lat, lon) of raster cells
+                                  xy <- data.frame(lon = covs$xy$x, lat = covs$xy$y)
+                                  org.data <- data.frame(z = rep(1, length(dat$lat)), lon = dat$lon, lat = dat$lat)
+                                  org.mod <- mgcv::gam(z ~ s(lon, lat), data = org.data, family = "binomial")
+                                  X <- predict(object = org.mod, type = "lpmatrix", newdata = xy)
+
+                                  ## For each posterior sample, estimate occupancy for each cell
+                                  r.psi <- array(0, dim = c(dim(sim_list$sims.list$xpsi)[1], dim(covs$climate)[1], length(years)))
+
+                                  for(ii in 1:dim(sim_list$sims.list$xpsi)[1]){
+                                    lpsi <- X %*% sim_list$sims.list$b[ii,] +
+                                      covs$climate[,,1] %*% (sim_list$sims.list$g.psi[ii,] * sim_list$sims.list$betaT.psi[ii,])
+                                    r.psi[ii, , 1] <- plogis(lpsi)
+
+
+                                    # Extinction/colonization prob
+                                    for (yy in 2:length(years)) {
+                                      gam <- matrix(plogis(sim_list$sims.list$beta.gam0[ii] + covs$climate[,,yy] %*% (sim_list$sims.list$g.gam[ii,] * sim_list$sims.list$betaT.gam[ii,])))  #  real colonization for each site
+                                      eps <- matrix(plogis(sim_list$sims.list$beta.eps0[ii] + covs$climate[,,yy] %*% (sim_list$sims.list$g.eps[ii,] * sim_list$sims.list$betaT.eps[ii,])))  #  real extinction for each site
+                                      #   compute psi for years 2 ... years
+                                      r.psi[ii, , yy] <- r.psi[ii, , yy - 1] * eps + (1 - r.psi[ii, , yy - 1]) * gam
+                                    }
+                                  }
+
+                                  occ <- list(occ = r.psi, xy = xy)
+                                  saveRDS(occ, file = paste0("inst/output/", spp[i], "/occ.rds"))
+                                  return(spp[i])
+                                }
+    return(occ_run)
+  }
+
+  if(!is.null(alpha)){
+    ## Read count data
+    dat <-  readRDS(paste0("inst/output/", alpha, "/bbs_data.rds"))
+
+    ## Read jags output
+    sim_list <- readRDS(paste0("inst/output/", alpha, "/jags_fit.rds"))
+
+    years <- seq(from = dat$start_year, to = dat$end_year)
+
+    ## Get climate values for all cells/years
+    covs <- raster.to.array(alpha, years)
+
+    ## Get model matrix for s(lat, lon) of raster cells
+    xy <- data.frame(lon = covs$xy$x, lat = covs$xy$y)
+    org.data <- data.frame(z = rep(1, length(dat$lat)), lon = dat$lon, lat = dat$lat)
+    org.mod <- mgcv::gam(z ~ s(lon, lat), data = org.data, family = "binomial")
+    X <- predict(object = org.mod, type = "lpmatrix", newdata = xy)
+
+    ## For each posterior sample, estimate occupancy for each cell
     r.psi <- array(0, dim = c(dim(sim_list$sims.list$xpsi)[1], dim(covs$climate)[1], length(years)))
 
     for(ii in 1:dim(sim_list$sims.list$xpsi)[1]){
@@ -42,6 +95,8 @@ GetOccProb <- function(alpha, buff_method = "rec", Write = TRUE){
 
     occ <- list(occ = r.psi, xy = xy)
     saveRDS(occ, file = paste0("inst/output/", alpha, "/occ.rds"))
+  }
+
 }
 
 

@@ -4,7 +4,7 @@
 \alias{RunMod}
 \title{RunMod}
 \usage{
-RunMod(alpha, nI = 10000, nA = 5000, nC = 3, nT = 20, Parallel = TRUE)
+RunMod(alpha, nI = 20000, nA = 5000, nC = 3, nT = 20, Parallel = TRUE)
 }
 \arguments{
 \item{alpha}{alpha code for species of interest}
