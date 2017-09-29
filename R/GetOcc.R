@@ -5,8 +5,11 @@
 #' @param alpha Four letter alpha code for species of interest
 #' @export
 
-GetOccProb <- function(spp = NULL, alpha = NULL){
-  if(!is.null(spp)){
+GetOccProb <- function(alpha = NULL){
+  if(is.null(alpha)){
+    spp_list <- read.csv("inst/spp_list.csv")
+    spp <- as.character(spp_list$spp)
+
     ### Register cores
     cores <- parallel::detectCores()
     if(length(spp) < cores) cores <- length(spp)
@@ -55,9 +58,7 @@ GetOccProb <- function(spp = NULL, alpha = NULL){
                                   return(spp[i])
                                 }
     return(occ_run)
-  }
-
-  if(!is.null(alpha)){
+  }else{
     ## Read count data
     dat <-  readRDS(paste0("inst/output/", alpha, "/bbs_data.rds"))
 

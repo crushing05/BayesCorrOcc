@@ -74,7 +74,9 @@ targets:
 
 ## Get indices
   occ_run:
-    command: GetOccProb(spp = run_ppc)
+    command: GetOccProb()
+    depends:
+      - inst/spp_list.csv
 
 
   occ_summary:
