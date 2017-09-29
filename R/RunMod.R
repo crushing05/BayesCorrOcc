@@ -36,6 +36,8 @@ RunMod <- function(spp = NULL, alpha = NULL, nI = 250, nA = 100, nC = 2, nT = 5,
                        inits$gam.betas[abs(inits$gam.betas) > 8] <- 0
                        inits$eps.se[abs(inits$eps.betas) > 8] <- 1
                        inits$eps.betas[abs(inits$eps.betas) > 8] <- 0
+                       inits$p.betas[abs(inits$p.betas) > 8] <- 0
+                       inits$th.betas[abs(inits$th.betas) > 8] <- 0
 
                        ### Get data for GAM JAGS model
                        jagam.data <- data.frame(z = rep(1, length(dat$lat)), x = dat$lon, y = dat$lat)
@@ -101,6 +103,8 @@ RunMod <- function(spp = NULL, alpha = NULL, nI = 250, nA = 100, nC = 2, nT = 5,
     inits$gam.betas[abs(inits$gam.betas) > 8] <- 0
     inits$eps.se[abs(inits$eps.betas) > 8] <- 1
     inits$eps.betas[abs(inits$eps.betas) > 8] <- 0
+    inits$p.betas[abs(inits$p.betas) > 8] <- 0
+    inits$th.betas[abs(inits$th.betas) > 8] <- 0
 
     ### Get data for GAM JAGS model
     jagam.data <- data.frame(z = rep(1, length(dat$lat)), x = dat$lon, y = dat$lat)
@@ -143,7 +147,7 @@ RunMod <- function(spp = NULL, alpha = NULL, nI = 250, nA = 100, nC = 2, nT = 5,
     mod <- system.file("jags", "cor_Occ_dyn.jags", package = "BayesCorrOcc")
     jags.fit <- jagsUI::jags(data = jags.data, parameters.to.save = jags.params,
                              inits = jags.inits, model.file = mod,
-                             n.chains = nC, n.iter = nI, n.adapt = nA, n.burnin = 2500, n.thin = nT,
+                             n.chains = nC, n.iter = nI, n.adapt = nA, n.burnin = nA/2, n.thin = nT,
                              parallel = Parallel, verbose = FALSE)
 
     ### Save output
