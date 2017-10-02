@@ -13,7 +13,7 @@ RunMod <- function(spp = NULL, alpha = NULL, nI = 250, nA = 100, nC = 2, nT = 5,
       if(!spp_test) spp_run <- c(spp_run, as.character(spp[i]))
     }
 
-    if(is.null(spp_test)){
+    if(is.null(spp_run)){
       return(spp)
     }else{
       ### Register core
