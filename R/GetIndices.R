@@ -121,9 +121,9 @@ GetIndices <- function(spp = NULL, alpha = NULL){
       avg.psi$UCI[tt] <- quantile(apply(occ$occ[,,tt], 1, mean), probs = 0.975)
       avg.psi$ind[tt] <- "avg.psi"
 
-      s.lat$Est[tt] <- mean(apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.975, coord = occ$xy$lat, limit = "south")))
-      s.lat$LCI[tt] <- quantile(apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.975, coord = occ$xy$lat, limit = "south")), probs = 0.025)
-      s.lat$UCI[tt] <- quantile(apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.975, coord = occ$xy$lat, limit = "south")), probs = 0.975)
+      s.lat$Est[tt] <- mean(apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.999, coord = occ$xy$lat, limit = "south")))
+      s.lat$LCI[tt] <- quantile(apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.999, coord = occ$xy$lat, limit = "south")), probs = 0.025)
+      s.lat$UCI[tt] <- quantile(apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.999, coord = occ$xy$lat, limit = "south")), probs = 0.975)
       s.lat$ind[tt] <- "s.lat"
 
       s.core$Est[tt] <- mean(apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.75, coord = occ$xy$lat, limit = "south")))
@@ -131,9 +131,9 @@ GetIndices <- function(spp = NULL, alpha = NULL){
       s.core$UCI[tt] <- quantile(apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.75, coord = occ$xy$lat, limit = "south")), probs = 0.975)
       s.core$ind[tt] <- "s.core"
 
-      n.lat$Est[tt] <- mean(apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.975, coord = occ$xy$lat, limit = "north")))
-      n.lat$LCI[tt] <- quantile(apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.975, coord = occ$xy$lat, limit = "north")), probs = 0.025)
-      n.lat$UCI[tt] <- quantile(apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.975, coord = occ$xy$lat, limit = "north")), probs = 0.975)
+      n.lat$Est[tt] <- mean(apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.999, coord = occ$xy$lat, limit = "north")))
+      n.lat$LCI[tt] <- quantile(apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.999, coord = occ$xy$lat, limit = "north")), probs = 0.025)
+      n.lat$UCI[tt] <- quantile(apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.999, coord = occ$xy$lat, limit = "north")), probs = 0.975)
       n.lat$ind[tt] <- "n.lat"
 
       n.core$Est[tt] <- mean(apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.75, coord = occ$xy$lat, limit = "north")))
@@ -141,9 +141,9 @@ GetIndices <- function(spp = NULL, alpha = NULL){
       n.core$UCI[tt] <- quantile(apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.75, coord = occ$xy$lat, limit = "north")), probs = 0.975)
       n.core$ind[tt] <- "n.core"
 
-      w.lon$Est[tt] <- mean(apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.975, coord = occ$xy$lon, limit = "west")))
-      w.lon$LCI[tt] <- quantile(apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.975, coord = occ$xy$lon, limit = "west")), probs = 0.025)
-      w.lon$UCI[tt] <- quantile(apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.975, coord = occ$xy$lon, limit = "west")), probs = 0.975)
+      w.lon$Est[tt] <- mean(apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.999, coord = occ$xy$lon, limit = "west")))
+      w.lon$LCI[tt] <- quantile(apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.999, coord = occ$xy$lon, limit = "west")), probs = 0.025)
+      w.lon$UCI[tt] <- quantile(apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.999, coord = occ$xy$lon, limit = "west")), probs = 0.975)
       w.lon$ind[tt] <- "w.lon"
 
       w.core$Est[tt] <- mean(apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.75, coord = occ$xy$lon, limit = "west")))
@@ -151,9 +151,9 @@ GetIndices <- function(spp = NULL, alpha = NULL){
       w.core$UCI[tt] <- quantile(apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.75, coord = occ$xy$lon, limit = "west")), probs = 0.975)
       w.core$ind[tt] <- "w.core"
 
-      e.lon$Est[tt] <- mean(apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.975, coord = occ$xy$lon, limit = "east")))
-      e.lon$LCI[tt] <- quantile(apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.975, coord = occ$xy$lon, limit = "east")), probs = 0.025)
-      e.lon$UCI[tt] <- quantile(apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.975, coord = occ$xy$lon, limit = "east")), probs = 0.975)
+      e.lon$Est[tt] <- mean(apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.999, coord = occ$xy$lon, limit = "east")))
+      e.lon$LCI[tt] <- quantile(apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.999, coord = occ$xy$lon, limit = "east")), probs = 0.025)
+      e.lon$UCI[tt] <- quantile(apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.999, coord = occ$xy$lon, limit = "east")), probs = 0.975)
       e.lon$ind[tt] <- "e.lon"
 
       e.core$Est[tt] <- mean(apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.75, coord = occ$xy$lon, limit = "east")))
