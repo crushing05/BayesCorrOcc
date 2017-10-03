@@ -74,24 +74,37 @@ cat("
 
     ## Parametric effect priors
     for (ii in 1:1) {
-      b[ii] ~ dnorm(0,0.033)
+      b.psi[ii] ~ dnorm(0,0.033)
+      b.gam[ii] ~ dnorm(0,0.033)
+      b.eps[ii] ~ dnorm(0,0.033)
     }
 
 
     ## prior for s(sim_dat$xy$x,sim_dat$xy$y)...
-    K1 <- S1[1:29,1:29] * lambda[1]  + S1[1:29,30:58] * lambda[2]
-    b[2:30] ~ dmnorm(zero[2:30], K1)
+    K1 <- S1[1:29,1:29] * lambda.psi[1]  + S1[1:29,30:58] * lambda.psi[2]
+    b.psi[2:30] ~ dmnorm(zero[2:30], K1)
 
+    K2 <- S1[1:29,1:29] * lambda.gam[1]  + S1[1:29,30:58] * lambda.gam[2]
+    b.gam[2:30] ~ dmnorm(zero[2:30], K2)
+
+    K3 <- S1[1:29,1:29] * lambda.eps[1]  + S1[1:29,30:58] * lambda.eps[2]
+    b.eps[2:30] ~ dmnorm(zero[2:30], K3)
 
     ## smoothing parameter priors
     for (ii in 1:2) {
-      lambda[ii] ~ dgamma(.05,.005)
-      rho[ii] <- log(lambda[ii])
+      lambda.psi[ii] ~ dgamma(.05,.005)
+      rho.psi[ii] <- log(lambda.psi[ii])
+
+      lambda.gam[ii] ~ dgamma(.05,.005)
+      rho.gam[ii] <- log(lambda.gam[ii])
+
+      lambda.eps[ii] ~ dgamma(.05,.005)
+      rho.eps[ii] <- log(lambda.eps[ii])
     }
 
 
     ## Initial occupancy probability
-    eta <- X %*% b + Xclim[,,1] %*% beta.psi
+    eta <- X %*% b.psi + Xclim[,,1] %*% beta.psi
 
 
 
@@ -124,8 +137,8 @@ cat("
       logit(p[ii, 2, tt]) <- alpha0 + alpha1 * Xp[ii, tt] + alpha2 * nov[ii, tt] + omega[obs[ii, tt]]
 
       ## Initial occupancy
-      logit(gam[ii, tt - 1]) <- beta.gam0 + Xclim[ii,,tt] %*% beta.gam
-      logit(eps[ii, tt - 1]) <- beta.eps0 + Xclim[ii,,tt] %*% beta.eps
+      logit(gam[ii, tt - 1]) <- X[ii,] %*% b.gam + Xclim[ii,,tt] %*% beta.gam
+      logit(eps[ii, tt - 1]) <- X[ii,] %*% b.eps + Xclim[ii,,tt] %*% beta.eps
 
       psi[ii, tt] <- z[ii, tt - 1] * eps[ii, tt - 1] + (1 - z[ii, tt - 1]) * gam[ii, tt - 1]
       z[ii, tt] ~ dbern(psi[ii, tt])

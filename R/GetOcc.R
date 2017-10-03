@@ -80,15 +80,15 @@ GetOccProb <- function(alpha = NULL){
     r.psi <- array(0, dim = c(dim(sim_list$sims.list$xpsi)[1], dim(covs$climate)[1], length(years)))
 
     for(ii in 1:dim(sim_list$sims.list$xpsi)[1]){
-      lpsi <- X %*% sim_list$sims.list$b[ii,] +
+      lpsi <- X %*% sim_list$sims.list$b.psi[ii,] +
         covs$climate[,,1] %*% (sim_list$sims.list$g.psi[ii,] * sim_list$sims.list$betaT.psi[ii,])
       r.psi[ii, , 1] <- plogis(lpsi)
 
 
       # Extinction/colonization prob
       for (yy in 2:length(years)) {
-        gam <- matrix(plogis(sim_list$sims.list$beta.gam0[ii] + covs$climate[,,yy] %*% (sim_list$sims.list$g.gam[ii,] * sim_list$sims.list$betaT.gam[ii,])))  #  real colonization for each site
-        eps <- matrix(plogis(sim_list$sims.list$beta.eps0[ii] + covs$climate[,,yy] %*% (sim_list$sims.list$g.eps[ii,] * sim_list$sims.list$betaT.eps[ii,])))  #  real extinction for each site
+        gam <- matrix(plogis(X %*% sim_list$sims.list$b.gam[ii,] + covs$climate[,,yy] %*% (sim_list$sims.list$g.gam[ii,] * sim_list$sims.list$betaT.gam[ii,])))  #  real colonization for each site
+        eps <- matrix(plogis(X %*% sim_list$sims.list$b.eps[ii,] + covs$climate[,,yy] %*% (sim_list$sims.list$g.eps[ii,] * sim_list$sims.list$betaT.eps[ii,])))  #  real extinction for each site
         #   compute psi for years 2 ... years
         r.psi[ii, , yy] <- r.psi[ii, , yy - 1] * eps + (1 - r.psi[ii, , yy - 1]) * gam
       }
