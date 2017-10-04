@@ -42,7 +42,7 @@ ppc <- function(spp = NULL, alpha = NULL){
             sim_h <- matrix(NA, nrow = dat$nRoutes, ncol = 5)
 
             ### For each route, estimate psi and p
-            PSI[, 1, ii] <- plogis(jagam.mod$jags.data$X %*% mod$sims.list$b[ii,] +
+            PSI[, 1, ii] <- plogis(jagam.mod$jags.data$X %*% mod$sims.list$b.psi[ii,] +
                                     bio[,,1] %*% (mod$sims.list$g.psi[ii,] * mod$sims.list$betaT.psi[ii,]))
             p1 <- plogis(mod$sims.list$alpha0[ii] + mod$sims.list$alpha1[ii] * dat$wind[, 1] +
                            mod$sims.list$alpha2[ii] * dat$nov[, 1] + mod$sims.list$omega[dat$obs[, 1]])
@@ -171,7 +171,7 @@ ppc <- function(spp = NULL, alpha = NULL){
       sim_h <- matrix(NA, nrow = dat$nRoutes, ncol = 5)
 
       ### For each route, estimate psi and p
-      PSI[, 1, i] <- plogis(jagam.mod$jags.data$X %*% mod$sims.list$b[i,] +
+      PSI[, 1, i] <- plogis(jagam.mod$jags.data$X %*% mod$sims.list$b.psi[i,] +
                               bio[,,1] %*% (mod$sims.list$g.psi[i,] * mod$sims.list$betaT.psi[i,]))
       p1 <- plogis(mod$sims.list$alpha0[i] + mod$sims.list$alpha1[i] * dat$wind[, 1] +
                      mod$sims.list$alpha2[i] * dat$nov[, 1] + mod$sims.list$omega[dat$obs[, 1]])
@@ -222,8 +222,8 @@ ppc <- function(spp = NULL, alpha = NULL){
         sim_h <- matrix(NA, nrow = dat$nRoutes, ncol = 5)
 
         ### For each route, estimate gamma, epsilon, psi and p
-        gamma <- plogis(X %*% sim_list$sims.list$b.gam[ii,] + bio[,,t] %*% (mod$sims.list$g.gam[i,] * mod$sims.list$betaT.gam[i,]))
-        epsilon <- plogis(X %*% sim_list$sims.list$b.eps[ii,] + bio[,,t] %*% (mod$sims.list$g.eps[i,] * mod$sims.list$betaT.eps[i,]))
+        gamma <- plogis(X %*% sim_list$sims.list$b.gam[i,] + bio[,,t] %*% (mod$sims.list$g.gam[i,] * mod$sims.list$betaT.gam[i,]))
+        epsilon <- plogis(X %*% sim_list$sims.list$b.eps[i,] + bio[,,t] %*% (mod$sims.list$g.eps[i,] * mod$sims.list$betaT.eps[i,]))
 
         PSI[, t, i] <- PSI[, t - 1, i] * epsilon + (1 - PSI[, t - 1, i]) * gamma
         p1 <- plogis(mod$sims.list$alpha0[i] + mod$sims.list$alpha1[i] * dat$wind[, t] +
