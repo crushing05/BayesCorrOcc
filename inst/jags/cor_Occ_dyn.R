@@ -81,14 +81,14 @@ cat("
 
 
     ## prior for s(sim_dat$xy$x,sim_dat$xy$y)...
-    K1 <- S1[1:29,1:29] * lambda.psi[1]  + S1[1:29,30:58] * lambda.psi[2]
-    b.psi[2:30] ~ dmnorm(zero[2:30], K1)
+    K1 <- S1[1:39,1:39] * lambda.psi[1]  + S1[1:39,40:78] * lambda.psi[2]
+    b.psi[2:30] ~ dmnorm(zero[2:40], K1)
 
-    K2 <- S1[1:29,1:29] * lambda.gam[1]  + S1[1:29,30:58] * lambda.gam[2]
-    b.gam[2:30] ~ dmnorm(zero[2:30], K2)
+    K2 <- S1[1:39,1:39] * lambda.gam[1]  + S1[1:39,40:78] * lambda.gam[2]
+    b.gam[2:30] ~ dmnorm(zero[2:40], K2)
 
-    K3 <- S1[1:29,1:29] * lambda.eps[1]  + S1[1:29,30:58] * lambda.eps[2]
-    b.eps[2:30] ~ dmnorm(zero[2:30], K3)
+    K3 <- S1[1:39,1:39] * lambda.eps[1]  + S1[1:39,40:78] * lambda.eps[2]
+    b.eps[2:30] ~ dmnorm(zero[2:40], K3)
 
     ## smoothing parameter priors
     for (ii in 1:2) {

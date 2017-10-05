@@ -23,7 +23,7 @@ ppc <- function(spp = NULL, alpha = NULL){
 
           ### Get lat/lon splines
           jagam.data <- data.frame(z = rep(1, length(dat$lat)), x = dat$lon, y = dat$lat)
-          jagam.mod <- mgcv::jagam(z ~ s(x, y), data = jagam.data, family = "binomial", file = "inst/jags/jagam.jags")
+          jagam.mod <- mgcv::jagam(z ~ s(x, y, k = 40), data = jagam.data, family = "binomial", file = "inst/jags/jagam.jags")
 
           ### Empty matrices to store observed and simulated X2 estimates
           fit <- matrix(numeric(length = mod$mcmc.info$n.samples*dat$nYears), nrow = dat$nYears)
@@ -93,8 +93,8 @@ ppc <- function(spp = NULL, alpha = NULL){
               sim_h <- matrix(NA, nrow = dat$nRoutes, ncol = 5)
 
               ### For each route, estimate gamma, epsilon, psi and p
-              gamma <- plogis(X %*% sim_list$sims.list$b.gam[ii,] + bio[,,t] %*% (mod$sims.list$g.gam[ii,] * mod$sims.list$betaT.gam[ii,]))
-              epsilon <- plogis(X %*% sim_list$sims.list$b.eps[ii,] + bio[,,t] %*% (mod$sims.list$g.eps[ii,] * mod$sims.list$betaT.eps[ii,]))
+              gamma <- plogis(jagam.mod$jags.data$X %*% mod$sims.list$b.gam[ii,] + bio[,,t] %*% (mod$sims.list$g.gam[ii,] * mod$sims.list$betaT.gam[ii,]))
+              epsilon <- plogis(jagam.mod$jags.data$X %*% mod$sims.list$b.eps[ii,] + bio[,,t] %*% (mod$sims.list$g.eps[ii,] * mod$sims.list$betaT.eps[ii,]))
 
               PSI[, t, ii] <- PSI[, t - 1, ii] * epsilon + (1 - PSI[, t - 1, ii]) * gamma
               p1 <- plogis(mod$sims.list$alpha0[ii] + mod$sims.list$alpha1[ii] * dat$wind[, t] +
@@ -152,7 +152,7 @@ ppc <- function(spp = NULL, alpha = NULL){
 
     ### Get lat/lon splines
     jagam.data <- data.frame(z = rep(1, length(dat$lat)), x = dat$lon, y = dat$lat)
-    jagam.mod <- mgcv::jagam(z ~ s(x, y), data = jagam.data, family = "binomial", file = "inst/jags/jagam.jags")
+    jagam.mod <- mgcv::jagam(z ~ s(x, y, k = 40), data = jagam.data, family = "binomial", file = "inst/jags/jagam.jags")
 
     ### Empty matrices to store observed and simulated X2 estimates
     fit <- matrix(numeric(length = mod$mcmc.info$n.samples*dat$nYears), nrow = dat$nYears)
@@ -222,8 +222,8 @@ ppc <- function(spp = NULL, alpha = NULL){
         sim_h <- matrix(NA, nrow = dat$nRoutes, ncol = 5)
 
         ### For each route, estimate gamma, epsilon, psi and p
-        gamma <- plogis(X %*% sim_list$sims.list$b.gam[i,] + bio[,,t] %*% (mod$sims.list$g.gam[i,] * mod$sims.list$betaT.gam[i,]))
-        epsilon <- plogis(X %*% sim_list$sims.list$b.eps[i,] + bio[,,t] %*% (mod$sims.list$g.eps[i,] * mod$sims.list$betaT.eps[i,]))
+        gamma <- plogis(jagam.mod$jags.data$X %*% mod$sims.list$b.gam[i,] + bio[,,t] %*% (mod$sims.list$g.gam[i,] * mod$sims.list$betaT.gam[i,]))
+        epsilon <- plogis(jagam.mod$jags.data$X %*% mod$sims.list$b.eps[i,] + bio[,,t] %*% (mod$sims.list$g.eps[i,] * mod$sims.list$betaT.eps[i,]))
 
         PSI[, t, i] <- PSI[, t - 1, i] * epsilon + (1 - PSI[, t - 1, i]) * gamma
         p1 <- plogis(mod$sims.list$alpha0[i] + mod$sims.list$alpha1[i] * dat$wind[, t] +

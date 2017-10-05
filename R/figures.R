@@ -293,9 +293,9 @@ md2html <- function(filename, dest = NULL) {
   markdownToHTML(filename, dest, options = opts)
 }
 
-#' PlotIndex
+#' PostCheck
 #'
-#' Function to plot multi-species indices of range change
+#' Plot posterior predictive checks
 #' @export
 
 PostCheck <- function(alpha){
