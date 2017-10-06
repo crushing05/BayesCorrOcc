@@ -23,7 +23,7 @@ ppc <- function(spp = NULL, alpha = NULL){
 
           ### Get lat/lon splines
           jagam.data <- data.frame(z = rep(1, length(dat$lat)), x = dat$lon, y = dat$lat)
-          jagam.mod <- mgcv::jagam(z ~ s(x, y, k = 40), data = jagam.data, family = "binomial", file = "inst/jags/jagam.jags")
+          jagam.mod <- mgcv::jagam(z ~ s(x, y, k = 60, bs = 'ds', m = c(1, 0.5)), data = jagam.data, family = "binomial", file = "inst/jags/jagam.jags")
 
           ### Empty matrices to store observed and simulated X2 estimates
           fit <- matrix(numeric(length = mod$mcmc.info$n.samples*dat$nYears), nrow = dat$nYears)
@@ -152,7 +152,7 @@ ppc <- function(spp = NULL, alpha = NULL){
 
     ### Get lat/lon splines
     jagam.data <- data.frame(z = rep(1, length(dat$lat)), x = dat$lon, y = dat$lat)
-    jagam.mod <- mgcv::jagam(z ~ s(x, y, k = 40), data = jagam.data, family = "binomial", file = "inst/jags/jagam.jags")
+    jagam.mod <- mgcv::jagam(z ~ s(x, y, k = 60, bs = 'ds', m = c(1, 0.5)), data = jagam.data, family = "binomial", file = "inst/jags/jagam.jags")
 
     ### Empty matrices to store observed and simulated X2 estimates
     fit <- matrix(numeric(length = mod$mcmc.info$n.samples*dat$nYears), nrow = dat$nYears)
