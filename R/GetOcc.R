@@ -32,7 +32,7 @@ GetOccProb <- function(alpha = NULL){
                                   ## Get model matrix for s(lat, lon) of raster cells
                                   xy <- data.frame(lon = covs$xy$x, lat = covs$xy$y)
                                   org.data <- data.frame(z = rep(1, length(dat$lat)), lon = dat$lon, lat = dat$lat)
-                                  org.mod <- mgcv::gam(z ~ s(lon, lat, k = 60, bs = 'ds'), data = org.data, family = "binomial")
+                                  org.mod <- mgcv::gam(z ~ s(lon, lat, k = 60, bs = 'ds', m = c(1, 0.5)), data = org.data, family = "binomial")
                                   X <- predict(object = org.mod, type = "lpmatrix", newdata = xy)
 
                                   ## For each posterior sample, estimate occupancy for each cell
@@ -73,7 +73,7 @@ GetOccProb <- function(alpha = NULL){
     ## Get model matrix for s(lat, lon) of raster cells
     xy <- data.frame(lon = covs$xy$x, lat = covs$xy$y)
     org.data <- data.frame(z = rep(1, length(dat$lat)), lon = dat$lon, lat = dat$lat)
-    org.mod <- mgcv::gam(z ~ s(lon, lat), data = org.data, family = "binomial")
+    org.mod <- mgcv::gam(z ~ s(lon, lat, k = 60, bs = 'ds', m = c(1, 0.5)), data = org.data, family = "binomial")
     X <- predict(object = org.mod, type = "lpmatrix", newdata = xy)
 
     ## For each posterior sample, estimate occupancy for each cell

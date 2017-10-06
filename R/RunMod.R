@@ -42,7 +42,7 @@ RunMod <- function(spp = NULL, alpha = NULL, nI = 250, nA = 100, nC = 2, nT = 5,
 
                                      ### Get data for GAM JAGS model
                                      jagam.data <- data.frame(z = rep(1, length(dat$lat)), x = dat$lon, y = dat$lat)
-                                     jagam.mod <- mgcv::jagam(z ~ s(x, y, k = 60, bs = 'ds'), data = jagam.data, family = "binomial", file = "inst/jags/jagam.jags")
+                                     jagam.mod <- mgcv::jagam(z ~ s(x, y, k = 60, bs = 'ds', m = c(1, 0.5)), data = jagam.data, family = "binomial", file = "inst/jags/jagam.jags")
 
 
                                      ### Data for JAGS
