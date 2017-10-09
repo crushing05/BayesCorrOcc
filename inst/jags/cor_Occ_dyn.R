@@ -140,7 +140,7 @@ cat("
       logit(gam[ii, tt - 1]) <- X[ii,] %*% b.gam + Xclim[ii,,tt] %*% beta.gam
       logit(eps[ii, tt - 1]) <- X[ii,] %*% b.eps + Xclim[ii,,tt] %*% beta.eps
 
-      psi[ii, tt] <- z[ii, tt - 1] * eps[ii, tt - 1] + (1 - z[ii, tt - 1]) * gam[ii, tt - 1]
+      psi[ii, tt] <- z[ii, tt - 1] * (1 - eps[ii, tt - 1]) + (1 - z[ii, tt - 1]) * gam[ii, tt - 1]
       z[ii, tt] ~ dbern(psi[ii, tt])
 
 
