@@ -39,7 +39,7 @@ GetOccProb <- function(alpha = NULL){
                                   r.psi <- array(0, dim = c(dim(sim_list$sims.list$xpsi)[1], dim(covs$climate)[1], length(years)))
 
                                   for(ii in 1:dim(sim_list$sims.list$xpsi)[1]){
-                                    lpsi <- X %*% sim_list$sims.list$b[ii,] +
+                                    lpsi <- X %*% sim_list$sims.list$b.psi[ii,] +
                                       covs$climate[,,1] %*% (sim_list$sims.list$g.psi[ii,] * sim_list$sims.list$betaT.psi[ii,])
                                     r.psi[ii, , 1] <- plogis(lpsi)
 
