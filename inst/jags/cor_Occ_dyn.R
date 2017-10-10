@@ -27,25 +27,25 @@ cat("
       beta.psi[ii] <- g.psi[ii] * betaT.psi[ii]
 
       bpriorm.psi[ii] <- (1 - g.psi[ii]) * mu.psi[ii]
-      tprior.psi[ii] <- g.psi[ii] * tau.beta + (1 - g.psi[ii]) * pow(se.psi[ii], -2)
+      tprior.psi[ii] <- g.psi[ii] * 0.01 + (1 - g.psi[ii]) * pow(se.psi[ii], -2)
 
       ## Colonization
       betaT.gam[ii] ~ dnorm(bpriorm.gam[ii], tprior.gam[ii])T(-10, 10)
       beta.gam[ii] <- g.gam[ii] * betaT.gam[ii]
 
       bpriorm.gam[ii] <- (1 - g.gam[ii]) * mu.gam[ii]
-      tprior.gam[ii] <- g.gam[ii] * tau.beta + (1 - g.gam[ii]) * pow(se.gam[ii], -2)
+      tprior.gam[ii] <- g.gam[ii] * 0.01 + (1 - g.gam[ii]) * pow(se.gam[ii], -2)
 
       ## Extinction
       betaT.eps[ii] ~ dnorm(bpriorm.eps[ii], tprior.eps[ii])T(-10, 10)
       beta.eps[ii] <- g.eps[ii] * betaT.eps[ii]
 
       bpriorm.eps[ii] <- (1 - g.eps[ii]) * mu.eps[ii]
-      tprior.eps[ii] <- g.eps[ii] * tau.beta + (1 - g.eps[ii]) * pow(se.eps[ii], -2)
+      tprior.eps[ii] <- g.eps[ii] * 0.01 + (1 - g.eps[ii]) * pow(se.eps[ii], -2)
     }
 
-    tau.beta <- pow(sigma.beta, -2)
-    sigma.beta ~ dunif(0, 10)
+    #tau.beta <- pow(sigma.beta, -2)
+    #sigma.beta ~ dunif(0, 10)
 
     beta.gam0 ~ dnorm(0, 0.1)T(-10, 10)
     beta.eps0 ~ dnorm(0, 0.1)T(-10, 10)
@@ -75,8 +75,8 @@ cat("
     ## Parametric effect priors
     for (ii in 1:1) {
       b.psi[ii] ~ dnorm(0,0.033)
-      b.gam[ii] ~ dnorm(0,0.033)
-      b.eps[ii] ~ dnorm(0,0.033)
+      # b.gam[ii] ~ dnorm(0,0.033)
+      # b.eps[ii] ~ dnorm(0,0.033)
     }
 
 
@@ -84,22 +84,23 @@ cat("
     K1 <- S1[1:59,1:59] * lambda.psi[1]
     b.psi[2:60] ~ dmnorm(zero[2:60], K1)
 
-    K2 <- S1[1:59,1:59] * lambda.gam[1]
-    b.gam[2:60] ~ dmnorm(zero[2:60], K2)
+    # K2 <- S1[1:59,1:59] * lambda.gam[1]
+    # b.gam[2:60] ~ dmnorm(zero[2:60], K2)
+    #
+    # K3 <- S1[1:59,1:59] * lambda.eps[1]
+    # b.eps[2:60] ~ dmnorm(zero[2:60], K3)
 
-    K3 <- S1[1:59,1:59] * lambda.eps[1]
-    b.eps[2:60] ~ dmnorm(zero[2:60], K3)
 
     ## smoothing parameter priors
     for (ii in 1:1) {
       lambda.psi[ii] ~ dgamma(.05,.005)
       rho.psi[ii] <- log(lambda.psi[ii])
 
-      lambda.gam[ii] ~ dgamma(.05,.005)
-      rho.gam[ii] <- log(lambda.gam[ii])
-
-      lambda.eps[ii] ~ dgamma(.05,.005)
-      rho.eps[ii] <- log(lambda.eps[ii])
+      # lambda.gam[ii] ~ dgamma(.05,.005)
+      # rho.gam[ii] <- log(lambda.gam[ii])
+      #
+      # lambda.eps[ii] ~ dgamma(.05,.005)
+      # rho.eps[ii] <- log(lambda.eps[ii])
     }
 
 
@@ -137,8 +138,8 @@ cat("
       logit(p[ii, 2, tt]) <- alpha0 + alpha1 * Xp[ii, tt] + alpha2 * nov[ii, tt] + omega[obs[ii, tt]]
 
       ## Initial occupancy
-      logit(gam[ii, tt - 1]) <- X[ii,] %*% b.gam + Xclim[ii,,tt] %*% beta.gam
-      logit(eps[ii, tt - 1]) <- X[ii,] %*% b.eps + Xclim[ii,,tt] %*% beta.eps
+      logit(gam[ii, tt - 1]) <-  beta.gam0 + Xclim[ii,,tt] %*% beta.gam#X[ii,] %*% b.gam
+      logit(eps[ii, tt - 1]) <-  beta.eps0 + Xclim[ii,,tt] %*% beta.eps#X[ii,] %*% b.eps
 
       psi[ii, tt] <- z[ii, tt - 1] * (1 - eps[ii, tt - 1]) + (1 - z[ii, tt - 1]) * gam[ii, tt - 1]
       z[ii, tt] ~ dbern(psi[ii, tt])

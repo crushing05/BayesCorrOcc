@@ -233,7 +233,7 @@ MapDiff <- function(alpha){
     geom_polygon(data = canada, aes(x=long, y = lat, group = group), fill = NA, color="#909090")
   p <- p + geom_polygon(data = mexico, aes(x=long, y = lat, group = group),  fill = "#F0F0F1", color="#909090")
   p <- p + coord_map(projection = "lambert", lat0 = 25, lat1 = 50, xlim = c(xmin, xmax), ylim = c(ymin, ymax))
-  p <- p + scale_fill_continuous(low = "#F0F0F1", high = "#ef6e0b",  name =  "Occupancy \nProb.")
+  p <- p + scale_fill_continuous(low = "#F0F0F1", high = "#ef6e0b",  limits = c(0, 1), name =  "Occupancy \nProb.")
   p <- p + scale_x_continuous("Longitude",breaks = seq(from = 10*(xmin%/%10 + as.logical(xmin%%10)),
                                                        to = 10*(xmax%/%10 + as.logical(xmax%%10)), by = 10))
   p <- p + scale_y_continuous("Latitude", breaks = seq(from = 5*(ymin%/%5 + as.logical(ymin%%5)),
@@ -251,7 +251,7 @@ MapDiff <- function(alpha){
     geom_polygon(data = canada, aes(x=long, y = lat, group = group), fill = NA, color="#909090")
   q <- q + geom_polygon(data = mexico, aes(x=long, y = lat, group = group),  fill = "#F0F0F1", color="#909090")
   q <- q + coord_map(projection = "lambert", lat0 = 25, lat1 = 50, xlim = c(xmin, xmax), ylim = c(ymin, ymax))
-  q <- q + scale_fill_continuous(low = "#F0F0F1", high = "#ef6e0b", name =  "Occupancy \nProb.")
+  q <- q + scale_fill_continuous(low = "#F0F0F1", high = "#ef6e0b", limits = c(0, 1), name =  "Occupancy \nProb.")
   q <- q + scale_x_continuous("Longitude",breaks = seq(from = 10*(xmin%/%10 + as.logical(xmin%%10)),
                                                        to = 10*(xmax%/%10 + as.logical(xmax%%10)), by = 10))
   q <- q + scale_y_continuous("Latitude", breaks = seq(from = 5*(ymin%/%5 + as.logical(ymin%%5)),
