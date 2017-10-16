@@ -96,7 +96,7 @@ ppc <- function(spp = NULL, alpha = NULL){
               gamma <- plogis(jagam.mod$jags.data$X %*% mod$sims.list$b.gam[ii,] + bio[,,t] %*% (mod$sims.list$g.gam[ii,] * mod$sims.list$betaT.gam[ii,]))
               epsilon <- plogis(jagam.mod$jags.data$X %*% mod$sims.list$b.eps[ii,] + bio[,,t] %*% (mod$sims.list$g.eps[ii,] * mod$sims.list$betaT.eps[ii,]))
 
-              PSI[, t, ii] <- PSI[, t - 1, ii] * epsilon + (1 - PSI[, t - 1, ii]) * gamma
+              PSI[, t, ii] <- PSI[, t - 1, ii] * (1 - epsilon) + (1 - PSI[, t - 1, ii]) * gamma
               p1 <- plogis(mod$sims.list$alpha0[ii] + mod$sims.list$alpha1[ii] * dat$wind[, t] +
                              mod$sims.list$alpha2[ii] * dat$nov[, t] + mod$sims.list$omega[dat$obs[, t]])
 
@@ -225,7 +225,7 @@ ppc <- function(spp = NULL, alpha = NULL){
         gamma <- plogis(jagam.mod$jags.data$X %*% mod$sims.list$b.gam[i,] + bio[,,t] %*% (mod$sims.list$g.gam[i,] * mod$sims.list$betaT.gam[i,]))
         epsilon <- plogis(jagam.mod$jags.data$X %*% mod$sims.list$b.eps[i,] + bio[,,t] %*% (mod$sims.list$g.eps[i,] * mod$sims.list$betaT.eps[i,]))
 
-        PSI[, t, i] <- PSI[, t - 1, i] * epsilon + (1 - PSI[, t - 1, i]) * gamma
+        PSI[, t, i] <- PSI[, t - 1, i] * (1 - epsilon) + (1 - PSI[, t - 1, i]) * gamma
         p1 <- plogis(mod$sims.list$alpha0[i] + mod$sims.list$alpha1[i] * dat$wind[, t] +
                        mod$sims.list$alpha2[i] * dat$nov[, t] + mod$sims.list$omega[dat$obs[, t]])
 
@@ -264,8 +264,9 @@ ppc <- function(spp = NULL, alpha = NULL){
 
     }
 
-    fit_df = data.frame(fit = c(fit), fit.new = c(fit.new))
-    ppc <- list(fit = fit_df, p = sum(fit > fit.new)/length(fit))
+    fit_df <- data.frame(fit = c(fit), fit.new = c(fit.new),
+                         Year = rep(seq(1:dat$nYears), each = mod$mcmc.info$n.samples))
+    ppc <- list(fit = fit_df, p = mean(fit > fit.new))
 
     saveRDS(ppc, file = paste0("inst/output/", dat$alpha, "/ppc.rds"))
   }
