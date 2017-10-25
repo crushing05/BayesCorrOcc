@@ -4,7 +4,7 @@
 #' @param alpha alpha code for species of interest; if NULL, runs model in parallel for all species
 #' @export
 
-RunMod <- function(spp = NULL, alpha = NULL, nI = 1250, nA = 500, nC = 2, nT = 5, Parallel = FALSE){
+RunMod <- function(spp = NULL, alpha = NULL, nI = 3000, nA = 1000, nC = 2, nT = 5, Parallel = FALSE){
   if(!is.null(spp)){
     ## Check if model has already been run for species
     spp_run <- NULL
@@ -70,7 +70,10 @@ RunMod <- function(spp = NULL, alpha = NULL, nI = 1250, nA = 500, nC = 2, nT = 5
                                                                    betaT.gam = inits$gam.betas,
                                                                    betaT.eps = inits$eps.betas,
                                                                    pind = runif(1, 0, 1),
-                                                                   xpsi = plogis(inits$th.betas), b = jagam.mod$jags.ini$b,
+                                                                   xpsi = plogis(inits$th.betas),
+                                                                   b.psi = jagam.mod$jags.ini$b,
+                                                                   b.gam = jagam.mod$jags.ini$b,
+                                                                   b.eps = -jagam.mod$jags.ini$b,
                                                                    lambda = jagam.mod$jags.ini$lambda,
                                                                    g.psi = rbinom(dim(covs)[2], size = 1, prob = 0.5),
                                                                    g.gam = rbinom(dim(covs)[2], size = 1, prob = 0.5),
