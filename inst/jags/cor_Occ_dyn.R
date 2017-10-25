@@ -5,48 +5,76 @@ cat("
     #### Prior distributions
 
     ## Priors for linear indicator variables -- prob = 1 if quadratic term in model, 0.5 otherwise
-    for(ii in 1:nPred){
-      g.psi[ii] ~ dbern(0.5)
-      g.gam[ii] ~ dbern(0.5)
-      g.eps[ii] ~ dbern(0.5)
-    }
+    # for(ii in 1:(nPred * 2)){
+    #   g.psi[ii] ~ dbern(0.5)
+    #   g.gam[ii] ~ dbern(0.5)
+    #   g.eps[ii] ~ dbern(0.5)
+    # }
 
 
     ## Priors for quadratic indicator variables - prob = 0.5
-    for(ii in (nPred + 1):(nPred * 2)){
-      g.psi[ii] ~ dbern(g.psi[ii - nPred] * 0.5)
-      g.gam[ii] ~ dbern(g.psi[ii - nPred] * 0.5)
-      g.eps[ii] ~ dbern(g.psi[ii - nPred] * 0.5)
-    }
+    # for(ii in (nPred + 1):(nPred * 2)){
+    #   g.psi[ii] ~ dbern(g.psi[ii - nPred] * 0.5)
+    #   g.gam[ii] ~ dbern(g.psi[ii - nPred] * 0.5)
+    #   g.eps[ii] ~ dbern(g.psi[ii - nPred] * 0.5)
+    # }
 
+    for(ii in 1:(nPred*2)){
+      beta.psi[ii] ~ dnorm(0, 0.01)
+      beta.gam[ii] ~ dnorm(0, 0.01)
+      beta.eps[ii] ~ dnorm(0, 0.01)
+    }
 
     ## Priors for betas - Normal(0, tau.beta) if g == 1; Normal(mu, 1/se^2) if g == 0
-    for(ii in 1:(nPred * 2)){
-      ## Initial occupancy
-      betaT.psi[ii] ~ dnorm(bpriorm.psi[ii], tprior.psi[ii])T(-10, 10)
-      beta.psi[ii] <- g.psi[ii] * betaT.psi[ii]
-
-      bpriorm.psi[ii] <- (1 - g.psi[ii]) * mu.psi[ii]
-      tprior.psi[ii] <- g.psi[ii] * 0.01 + (1 - g.psi[ii]) * pow(se.psi[ii], -2)
-
-      ## Colonization
-      betaT.gam[ii] ~ dnorm(bpriorm.gam[ii], tprior.gam[ii])T(-10, 10)
-      beta.gam[ii] <- g.gam[ii] * betaT.gam[ii]
-
-      bpriorm.gam[ii] <- (1 - g.gam[ii]) * mu.gam[ii]
-      tprior.gam[ii] <- g.gam[ii] * 0.01 + (1 - g.gam[ii]) * pow(se.gam[ii], -2)
-
-      ## Extinction
-      betaT.eps[ii] ~ dnorm(bpriorm.eps[ii], tprior.eps[ii])T(-10, 10)
-      beta.eps[ii] <- g.eps[ii] * betaT.eps[ii]
-
-      bpriorm.eps[ii] <- (1 - g.eps[ii]) * mu.eps[ii]
-      tprior.eps[ii] <- g.eps[ii] * 0.01 + (1 - g.eps[ii]) * pow(se.eps[ii], -2)
-    }
-
-
-    beta.gam0 ~ dnorm(0, 0.1)T(-10, 10)
-    beta.eps0 ~ dnorm(0, 0.1)T(-10, 10)
+    # for(ii in 1:nPred){
+    #   ## Initial occupancy
+    #   betaT.psi[ii] ~ dnorm(bpriorm.psi[ii], tprior.psi[ii])T(-10, 10)
+    #   beta.psi[ii] <- g.psi[ii] * betaT.psi[ii]
+    #
+    #   bpriorm.psi[ii] <- (1 - g.psi[ii]) * mu.psi[ii]
+    #   tprior.psi[ii] <- g.psi[ii] * 0.01 + (1 - g.psi[ii]) * pow(se.psi[ii], -2)
+    #
+    #   ## Colonization
+    #   betaT.gam[ii] ~ dnorm(bpriorm.gam[ii], tprior.gam[ii])T(-10, 10)
+    #   beta.gam[ii] <- g.gam[ii] * betaT.gam[ii]
+    #
+    #   bpriorm.gam[ii] <- (1 - g.gam[ii]) * mu.gam[ii]
+    #   tprior.gam[ii] <- g.gam[ii] * 0.01 + (1 - g.gam[ii]) * pow(se.gam[ii], -2)
+    #
+    #   ## Extinction
+    #   betaT.eps[ii] ~ dnorm(bpriorm.eps[ii], tprior.eps[ii])T(-10, 10)
+    #   beta.eps[ii] <- g.eps[ii] * betaT.eps[ii]
+    #
+    #   bpriorm.eps[ii] <- (1 - g.eps[ii]) * mu.eps[ii]
+    #   tprior.eps[ii] <- g.eps[ii] * 0.01 + (1 - g.eps[ii]) * pow(se.eps[ii], -2)
+    # }
+    #
+    # for(ii in (nPred + 1):(nPred * 2)){
+    #   ## Initial occupancy
+    #   betaT.psi[ii] ~ dnorm(bpriorm.psi[ii], tprior.psi[ii])T(-10, 10)
+    #   beta.psi[ii] <- g.psi[ii] * g.psi[ii - nPred] * betaT.psi[ii]
+    #
+    #   bpriorm.psi[ii] <- (1 - g.psi[ii]) * mu.psi[ii]
+    #   tprior.psi[ii] <- g.psi[ii] * 0.01 + (1 - g.psi[ii]) * pow(se.psi[ii], -2)
+    #
+    #   ## Colonization
+    #   betaT.gam[ii] ~ dnorm(bpriorm.gam[ii], tprior.gam[ii])T(-10, 10)
+    #   beta.gam[ii] <- g.gam[ii] * g.gam[ii - nPred] * betaT.gam[ii]
+    #
+    #   bpriorm.gam[ii] <- (1 - g.gam[ii]) * mu.gam[ii]
+    #   tprior.gam[ii] <- g.gam[ii] * 0.01 + (1 - g.gam[ii]) * pow(se.gam[ii], -2)
+    #
+    #   ## Extinction
+    #   betaT.eps[ii] ~ dnorm(bpriorm.eps[ii], tprior.eps[ii])T(-10, 10)
+    #   beta.eps[ii] <- g.eps[ii] * g.eps[ii - nPred] * betaT.eps[ii]
+    #
+    #   bpriorm.eps[ii] <- (1 - g.eps[ii]) * mu.eps[ii]
+    #   tprior.eps[ii] <- g.eps[ii] * 0.01 + (1 - g.eps[ii]) * pow(se.eps[ii], -2)
+    # }
+    #
+    #
+    # beta.gam0 ~ dnorm(0, 0.1)T(-10, 10)
+    # beta.eps0 ~ dnorm(0, 0.1)T(-10, 10)
 
 
     ## Detection priors
@@ -102,20 +130,32 @@ cat("
     }
 
 
+    ## Detection probability
+    p[1:nRoutes, 1, 1:nYears] <- 0
+    
+    for(tt in 1:nYears){
+     lp[1:nRoutes, 2, tt] <-  alpha0 + alpha1 %*% Xp[, tt] + alpha2 %*% nov[, tt] + omega[obs[, tt]]
+    }
+
+
     ## Initial occupancy probability
-    eta <- X %*% b.psi + Xclim[,,1] %*% beta.psi
+    lpsi <- X %*% b.psi + Xclim[,,1] %*% beta.psi
 
 
+    ## Colonization/extinction probability
+    for(tt in 2:nYears){
+      lgam[1:nRoutes, tt - 1] <- X %*% b.gam + Xclim[,,tt] %*% beta.gam
+      leps[1:nRoutes, tt - 1] <- X %*% b.eps + Xclim[,,tt] %*% beta.eps
+    }
 
 
     ### Likelihood
     for (ii in 1:nRoutes) {
     ## Detection probability
-      p[ii, 1, 1] <- 0
-      logit(p[ii, 2, 1]) <- alpha0 + alpha1 * Xp[ii, 1] + alpha2 * nov[ii, 1] + omega[obs[ii, 1]]
+      logit(p[ii, 2, 1]) <- lp[ii, 2, 1]
 
       ## Initial occupancy
-      logit(psi[ii, 1]) <- eta[ii]
+      logit(psi[ii, 1]) <- lpsi[ii]
       z[ii, 1] ~ dbern(psi[ii, 1])
 
 
@@ -132,13 +172,14 @@ cat("
 
 
      for(tt in 2:nYears){
-      p[ii, 1, tt] <- 0
-      logit(p[ii, 2, tt]) <- alpha0 + alpha1 * Xp[ii, tt] + alpha2 * nov[ii, tt] + omega[obs[ii, tt]]
+      ## Detection probability
+      logit(p[ii, 2, tt]) <- lp[ii, 2, tt]
 
-      ## Initial occupancy
-      logit(gam[ii, tt - 1]) <- inprod(X[ii,], b.gam) + inprod(Xclim[ii,,tt], beta.gam)
-      logit(eps[ii, tt - 1]) <- inprod(X[ii,], b.eps) + inprod(Xclim[ii,,tt], beta.eps)
+      ## Colonization/extinction probability
+      logit(gam[ii, tt - 1]) <- lgam[ii, tt - 1]
+      logit(eps[ii, tt - 1]) <- leps[ii, tt - 1]
 
+      ## Occupancy
       psi[ii, tt] <- z[ii, tt - 1] * (1 - eps[ii, tt - 1]) + (1 - z[ii, tt - 1]) * gam[ii, tt - 1]
       z[ii, tt] ~ dbern(psi[ii, tt])
 
