@@ -4,7 +4,7 @@
 #' @param alpha alpha code for species of interest; if NULL, runs model in parallel for all species
 #' @export
 
-RunMod <- function(spp = NULL, alpha = NULL, nI = 3000, nA = 1000, nC = 2, nT = 5, Parallel = FALSE){
+RunMod <- function(spp = NULL, alpha = NULL, nI = 2000, nA = 1000, nC = 3, nT = 5, Parallel = FALSE){
   if(!is.null(spp)){
     ## Check if model has already been run for species
     spp_run <- NULL
@@ -33,10 +33,6 @@ RunMod <- function(spp = NULL, alpha = NULL, nI = 3000, nA = 1000, nC = 2, nT = 
                                      ### For inits w/ very large (i.e., likely poorly estimated), change to 0 to ensure model doesn't choke
                                      inits$psi.se[abs(inits$psi.betas) > 8] <- 1
                                      inits$psi.betas[abs(inits$psi.betas) > 8] <- 0
-                                     inits$gam.se[abs(inits$gam.betas) > 8] <- 1
-                                     inits$gam.betas[abs(inits$gam.betas) > 8] <- 0
-                                     inits$eps.se[abs(inits$eps.betas) > 8] <- 1
-                                     inits$eps.betas[abs(inits$eps.betas) > 8] <- 0
                                      inits$p.betas[abs(inits$p.betas) > 8] <- 0
                                      inits$th.betas[abs(inits$th.betas) > 8] <- 0
 
@@ -50,14 +46,13 @@ RunMod <- function(spp = NULL, alpha = NULL, nI = 3000, nA = 1000, nC = 2, nT = 
                                                        Xp = dat$wind, nov = dat$nov, obs = dat$obs, nObs = max(dat$obs) - 1,
                                                        Xclim = covs, nPred = dim(covs)[2]/2,
                                                        X = jagam.mod$jags.data$X, S1 = jagam.mod$jags.data$S1, zero = jagam.mod$jags.data$zero,
-                                                       mu.psi = inits$psi.betas, se.psi = inits$psi.se,
-                                                       mu.gam = inits$gam.betas, se.gam = inits$gam.se,
-                                                       mu.eps = inits$eps.betas, se.eps = inits$eps.se)
+                                                       mu = inits$psi.betas, se = inits$psi.se)
 
 
                                      ### Parameters to monitor
-                                     jags.params <- c("xpsi", "lambda", "betaT.psi", "g.psi", "beta.gam0", "betaT.gam", "g.gam", "beta.eps0", "betaT.eps",
-                                                      "g.eps", "b.psi", "b.gam", "b.eps", "alpha0", "alpha1", "alpha2", "sigma.obs", "sigma.beta", "rho", "omega")
+                                     jags.params <- c("xpsi", "lambda", "betaT", "g",
+                                                      "alpha0", "alpha1", "alpha2", "sigma.obs",
+                                                      "sigma.gam", "rho", "b", "omega")
 
 
                                      ### Initial values
@@ -66,18 +61,11 @@ RunMod <- function(spp = NULL, alpha = NULL, nI = 3000, nA = 1000, nC = 2, nT = 
                                      jags.inits <- function(){list(y = y, z = apply(dat$h, c(1, 3), max),
                                                                    alpha0 = inits$p.betas[1], alpha1 = rnorm(1), alpha2 = rnorm(1),
                                                                    omega = c(rnorm(max(dat$obs) - 1), NA), sigma.obs = runif(1, 0, 5),
-                                                                   betaT.psi = inits$psi.betas, sigma.beta = runif(1, 0, 5),
-                                                                   betaT.gam = inits$gam.betas,
-                                                                   betaT.eps = inits$eps.betas,
-                                                                   pind = runif(1, 0, 1),
+                                                                   betaT = inits$psi.betas,
+                                                                   g = rbinom(dim(covs)[2], size = 1, prob = 0.5),
                                                                    xpsi = plogis(inits$th.betas),
-                                                                   b.psi = jagam.mod$jags.ini$b,
-                                                                   b.gam = jagam.mod$jags.ini$b,
-                                                                   b.eps = -jagam.mod$jags.ini$b,
-                                                                   lambda = jagam.mod$jags.ini$lambda,
-                                                                   g.psi = rbinom(dim(covs)[2], size = 1, prob = 0.5),
-                                                                   g.gam = rbinom(dim(covs)[2], size = 1, prob = 0.5),
-                                                                   g.eps = rbinom(dim(covs)[2], size = 1, prob = 0.5))}
+                                                                   b = matrix(rep(jagam.mod$jags.ini$b, each = 43), ncol = 43, byrow = TRUE),
+                                                                   lambda = jagam.mod$jags.ini$lambda)}
 
 
                                      ### Fit model
@@ -104,10 +92,6 @@ RunMod <- function(spp = NULL, alpha = NULL, nI = 3000, nA = 1000, nC = 2, nT = 
     ### For inits w/ very large (i.e., likely poorly estimated), change to 0 to ensure model doesn't choke
     inits$psi.se[abs(inits$psi.betas) > 8] <- 1
     inits$psi.betas[abs(inits$psi.betas) > 8] <- 0
-    inits$gam.se[abs(inits$gam.betas) > 8] <- 1
-    inits$gam.betas[abs(inits$gam.betas) > 8] <- 0
-    inits$eps.se[abs(inits$eps.betas) > 8] <- 1
-    inits$eps.betas[abs(inits$eps.betas) > 8] <- 0
     inits$p.betas[abs(inits$p.betas) > 8] <- 0
     inits$th.betas[abs(inits$th.betas) > 8] <- 0
 
@@ -120,14 +104,13 @@ RunMod <- function(spp = NULL, alpha = NULL, nI = 3000, nA = 1000, nC = 2, nT = 
                       Xp = dat$wind, nov = dat$nov, obs = dat$obs, nObs = max(dat$obs) - 1,
                       Xclim = covs, nPred = dim(covs)[2]/2,
                       X = jagam.mod$jags.data$X, S1 = jagam.mod$jags.data$S1, zero = jagam.mod$jags.data$zero,
-                      mu.psi = inits$psi.betas, se.psi = inits$psi.se,
-                      mu.gam = inits$gam.betas, se.gam = inits$gam.se,
-                      mu.eps = inits$eps.betas, se.eps = inits$eps.se)
+                      mu = inits$psi.betas, se = inits$psi.se)
 
 
     ### Parameters to monitor
-    jags.params <- c("xpsi", "betaT.psi", "g.psi", "beta.gam0", "betaT.gam", "g.gam", "beta.eps0", "betaT.eps",
-                     "g.eps", "b.psi", "b.gam", "b.eps", "alpha0", "alpha1", "alpha2", "sigma.obs", "sigma.beta", "rho.psi", "rho.gam", "rho.eps", "omega")
+    jags.params <- c("xpsi", "lambda", "betaT", "g",
+                     "alpha0", "alpha1", "alpha2", "sigma.obs",
+                     "sigma.gam", "rho", "b", "omega")
 
 
     ### Initial values
@@ -136,19 +119,11 @@ RunMod <- function(spp = NULL, alpha = NULL, nI = 3000, nA = 1000, nC = 2, nT = 
     jags.inits <- function(){list(y = y, z = apply(dat$h, c(1, 3), max),
                                   alpha0 = inits$p.betas[1], alpha1 = rnorm(1), alpha2 = rnorm(1),
                                   omega = c(rnorm(max(dat$obs) - 1), NA), sigma.obs = runif(1, 0, 5),
-                                  betaT.psi = inits$psi.betas, sigma.beta = runif(1, 0, 5),
-                                  betaT.gam = inits$gam.betas,
-                                  betaT.eps = inits$eps.betas,
-                                  pind = runif(1, 0, 1),
+                                  betaT = inits$psi.betas,
+                                  g = rbinom(dim(covs)[2], size = 1, prob = 0.5),
                                   xpsi = plogis(inits$th.betas),
-                                  b.psi = jagam.mod$jags.ini$b,
-                                  b.gam = jagam.mod$jags.ini$b,
-                                  b.eps = jagam.mod$jags.ini$b,
-                                  lambda = jagam.mod$jags.ini$lambda,
-                                  g.psi = rbinom(dim(covs)[2], size = 1, prob = 0.5),
-                                  g.gam = rbinom(dim(covs)[2], size = 1, prob = 0.5),
-                                  g.eps = rbinom(dim(covs)[2], size = 1, prob = 0.5))}
-
+                                  b = matrix(rep(jagam.mod$jags.ini$b, each = 43), ncol = 43, byrow = TRUE),
+                                  lambda = jagam.mod$jags.ini$lambda)}
 
     ### Fit model
     mod <- system.file("jags", "cor_Occ_dyn.jags", package = "BayesCorrOcc")

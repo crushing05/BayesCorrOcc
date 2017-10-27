@@ -23,7 +23,7 @@ OccSummary <- function(spp = NULL, alpha = NULL){
 
                                   Psi <- LCI <- UCI <- NULL
                                   for(tt in 1:dat$nYears){
-                                    tPsi <- apply(occ$occ[,,tt], 2, mean)
+                                    tPsi <- apply(occ$occ[,,tt], 2, function(x) mean(x))
                                     tLCI <- apply(occ$occ[,,tt], 2, function(x) quantile(x, probs = 0.025))
                                     tUCI <- apply(occ$occ[,,tt], 2, function(x) quantile(x, probs = 0.975))
 
@@ -52,7 +52,7 @@ OccSummary <- function(spp = NULL, alpha = NULL){
 
     Psi <- LCI <- UCI <- NULL
     for(tt in 1:dat$nYears){
-      tPsi <- apply(occ$occ[,,tt], 2, mean)
+      tPsi <- apply(occ$occ[,,tt], 2, function(x) mean(x))
       tLCI <- apply(occ$occ[,,tt], 2, function(x) quantile(x, probs = 0.025))
       tUCI <- apply(occ$occ[,,tt], 2, function(x) quantile(x, probs = 0.975))
 

@@ -42,8 +42,8 @@ ppc <- function(spp = NULL, alpha = NULL){
             sim_h <- matrix(NA, nrow = dat$nRoutes, ncol = 5)
 
             ### For each route, estimate psi and p
-            PSI[, 1, ii] <- plogis(jagam.mod$jags.data$X %*% mod$sims.list$b.psi[ii,] +
-                                    bio[,,1] %*% (mod$sims.list$g.psi[ii,] * mod$sims.list$betaT.psi[ii,]))
+            PSI[, 1, ii] <- plogis(jagam.mod$jags.data$X %*% mod$sims.list$b[ii,,1] +
+                                     bio[,,1] %*% (mod$sims.list$g[ii,] * mod$sims.list$betaT[ii,]))
             p1 <- plogis(mod$sims.list$alpha0[ii] + mod$sims.list$alpha1[ii] * dat$wind[, 1] +
                            mod$sims.list$alpha2[ii] * dat$nov[, 1] + mod$sims.list$omega[dat$obs[, 1]])
 
@@ -92,11 +92,9 @@ ppc <- function(spp = NULL, alpha = NULL){
               exp_pr <- matrix(NA, nrow = dat$nRoutes, ncol = 32)
               sim_h <- matrix(NA, nrow = dat$nRoutes, ncol = 5)
 
-              ### For each route, estimate gamma, epsilon, psi and p
-              gamma <- plogis(jagam.mod$jags.data$X %*% mod$sims.list$b.gam[ii,] + bio[,,t] %*% (mod$sims.list$g.gam[ii,] * mod$sims.list$betaT.gam[ii,]))
-              epsilon <- plogis(jagam.mod$jags.data$X %*% mod$sims.list$b.eps[ii,] + bio[,,t] %*% (mod$sims.list$g.eps[ii,] * mod$sims.list$betaT.eps[ii,]))
-
-              PSI[, t, ii] <- PSI[, t - 1, ii] * (1 - epsilon) + (1 - PSI[, t - 1, ii]) * gamma
+              ### For each route, estimate psi and p
+              PSI[, t, ii] <- plogis(jagam.mod$jags.data$X %*% mod$sims.list$b[i,,t] +
+                                       bio[,,t] %*% (mod$sims.list$g[i,] * mod$sims.list$betaT[i,]))
               p1 <- plogis(mod$sims.list$alpha0[ii] + mod$sims.list$alpha1[ii] * dat$wind[, t] +
                              mod$sims.list$alpha2[ii] * dat$nov[, t] + mod$sims.list$omega[dat$obs[, t]])
 
@@ -171,8 +169,8 @@ ppc <- function(spp = NULL, alpha = NULL){
       sim_h <- matrix(NA, nrow = dat$nRoutes, ncol = 5)
 
       ### For each route, estimate psi and p
-      PSI[, 1, i] <- plogis(jagam.mod$jags.data$X %*% mod$sims.list$b.psi[i,] +
-                              bio[,,1] %*% (mod$sims.list$g.psi[i,] * mod$sims.list$betaT.psi[i,]))
+      PSI[, 1, i] <- plogis(jagam.mod$jags.data$X %*% mod$sims.list$b[i,,1] +
+                              bio[,,1] %*% (mod$sims.list$g[i,] * mod$sims.list$betaT[i,]))
       p1 <- plogis(mod$sims.list$alpha0[i] + mod$sims.list$alpha1[i] * dat$wind[, 1] +
                      mod$sims.list$alpha2[i] * dat$nov[, 1] + mod$sims.list$omega[dat$obs[, 1]])
 
@@ -221,11 +219,9 @@ ppc <- function(spp = NULL, alpha = NULL){
         exp_pr <- matrix(NA, nrow = dat$nRoutes, ncol = 32)
         sim_h <- matrix(NA, nrow = dat$nRoutes, ncol = 5)
 
-        ### For each route, estimate gamma, epsilon, psi and p
-        gamma <- plogis(jagam.mod$jags.data$X %*% mod$sims.list$b.gam[i,] + bio[,,t] %*% (mod$sims.list$g.gam[i,] * mod$sims.list$betaT.gam[i,]))
-        epsilon <- plogis(jagam.mod$jags.data$X %*% mod$sims.list$b.eps[i,] + bio[,,t] %*% (mod$sims.list$g.eps[i,] * mod$sims.list$betaT.eps[i,]))
-
-        PSI[, t, i] <- PSI[, t - 1, i] * (1 - epsilon) + (1 - PSI[, t - 1, i]) * gamma
+        ### For each route, estimate psi and p
+        PSI[, t, i] <- plogis(jagam.mod$jags.data$X %*% mod$sims.list$b[i,,t] +
+                                bio[,,t] %*% (mod$sims.list$g[i,] * mod$sims.list$betaT[i,]))
         p1 <- plogis(mod$sims.list$alpha0[i] + mod$sims.list$alpha1[i] * dat$wind[, t] +
                        mod$sims.list$alpha2[i] * dat$nov[, t] + mod$sims.list$omega[dat$obs[, t]])
 
