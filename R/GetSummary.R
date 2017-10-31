@@ -55,40 +55,40 @@ MakeBetatab <- function(alpha, nuisance = FALSE){
 
 
     ## Data frame containing beta coeffecients and se
-    beta_est <- matrix(NA, nrow = 11, ncol = 3)
-    colnames(beta_est) <- c("$\\psi$", "$\\gamma$", "$\\epsilon$")
+    beta_est <- matrix(NA, nrow = 10, ncol = 1)
+    colnames(beta_est) <- c("$\\beta$")#, "$\\gamma$", "$\\epsilon$")
 
 
     ## Fill in intercept values
-    beta_est[1, 1] <- paste(trunc(sim_list$mean$b[1]*100)/100,
-                            " (", trunc(sim_list$q2.5$b[1]*100)/100,
-                            " -- ", trunc(sim_list$q97.5$b[1]*100)/100, ")", sep = "")
-    beta_est[1, 2] <- paste(trunc(sim_list$mean$beta.gam0*100)/100,
-                            " (", trunc(sim_list$q2.5$beta.gam0*100)/100,
-                            " -- ", trunc(sim_list$q97.5$beta.gam0*100)/100, ")", sep = "")
-    beta_est[1, 3] <- paste(trunc(sim_list$mean$beta.eps0*100)/100,
-                            " (", trunc(sim_list$q2.5$beta.eps0*100)/100,
-                            " -- ", trunc(sim_list$q97.5$beta.eps0*100)/100, ")", sep = "")
+    # beta_est[1, 1] <- paste(trunc(sim_list$mean$b[1]*100)/100,
+    #                         " (", trunc(sim_list$q2.5$b[1]*100)/100,
+    #                         " -- ", trunc(sim_list$q97.5$b[1]*100)/100, ")", sep = "")
+    # beta_est[1, 2] <- paste(trunc(sim_list$mean$beta.gam0*100)/100,
+    #                         " (", trunc(sim_list$q2.5$beta.gam0*100)/100,
+    #                         " -- ", trunc(sim_list$q97.5$beta.gam0*100)/100, ")", sep = "")
+    # beta_est[1, 3] <- paste(trunc(sim_list$mean$beta.eps0*100)/100,
+    #                         " (", trunc(sim_list$q2.5$beta.eps0*100)/100,
+    #                         " -- ", trunc(sim_list$q97.5$beta.eps0*100)/100, ")", sep = "")
 
     ## Fill in coefficients for climate covariates
     for(i in 1:10){
       # Psi
-        beta_est[i + 1, 1] <- paste(trunc(sim_list$mean$betaT.psi[i]*100)/100,
-                                    " (", trunc(sim_list$q2.5$betaT.psi[i]*100)/100,
-                                    " -- ", trunc(sim_list$q97.5$betaT.psi[i]*100)/100, ")", sep = "")
+        beta_est[i, 1] <- paste(trunc(sim_list$mean$betaT[i]*100)/100,
+                                    " (", trunc(sim_list$q2.5$betaT[i]*100)/100,
+                                    " -- ", trunc(sim_list$q97.5$betaT[i]*100)/100, ")", sep = "")
 
 
       # Gamma
-        beta_est[i + 1, 2] <- paste(trunc(sim_list$mean$betaT.gam[i]*100)/100,
-                                    " (", trunc(sim_list$q2.5$betaT.gam[i]*100)/100,
-                                    " -- ", trunc(sim_list$q97.5$betaT.gam[i]*100)/100, ")", sep = "")
-
+        # beta_est[i + 1, 2] <- paste(trunc(sim_list$mean$betaT.gam[i]*100)/100,
+        #                             " (", trunc(sim_list$q2.5$betaT.gam[i]*100)/100,
+        #                             " -- ", trunc(sim_list$q97.5$betaT.gam[i]*100)/100, ")", sep = "")
+        #
 
 
       # Epsilon
-        beta_est[i + 1, 3] <- paste(trunc(sim_list$mean$betaT.eps[i]*100)/100,
-                                    " (", trunc(sim_list$q2.5$betaT.eps[i]*100)/100,
-                                    " -- ", trunc(sim_list$q97.5$betaT.eps[i]*100)/100, ")", sep = "")
+        # beta_est[i + 1, 3] <- paste(trunc(sim_list$mean$betaT.eps[i]*100)/100,
+        #                             " (", trunc(sim_list$q2.5$betaT.eps[i]*100)/100,
+        #                             " -- ", trunc(sim_list$q97.5$betaT.eps[i]*100)/100, ")", sep = "")
 
 
     }
@@ -103,9 +103,9 @@ MakeBetatab <- function(alpha, nuisance = FALSE){
 
     ## Covert to data frame, add intercept, covert to character, replace NA with "-"
     beta_df <- as.data.frame(beta_est)
-    covs <- data.frame(cov = c("Intercept", as.character(levels(covs_use[order(covs_use)]))[1:10]))
+    covs <- data.frame(cov = as.character(levels(covs_use[order(covs_use)]))[1:10])
     beta_df <- dplyr::bind_cols(covs, beta_df)
-    beta_df[, 2:4] <- as.character(unlist(beta_df[, 2:4]))
+    # beta_df[, 2:4] <- as.character(unlist(beta_df[, 2:4]))
     names(beta_df)[1] <- ""
 
   }else{
@@ -172,22 +172,22 @@ MakeGtab <- function(alpha){
 
 
     ## Data frame containing beta coeffecients and se
-    beta_est <- matrix(NA, nrow = 10, ncol = 3)
-    colnames(beta_est) <- c("$\\psi$", "$\\gamma$", "$\\epsilon$")
+    beta_est <- matrix(NA, nrow = 10, ncol = 1)
+    colnames(beta_est) <- c("g")#, "$\\gamma$", "$\\epsilon$")
 
 
     ## Fill in coefficients for climate covariates
     for(i in 1:10){
       # Psi
-      beta_est[i, 1] <- trunc(sim_list$mean$g.psi[i]*100)/100
+      beta_est[i, 1] <- trunc(sim_list$mean$g[i]*100)/100
 
 
       # Gamma
-      beta_est[i, 2] <- trunc(sim_list$mean$g.gam[i]*100)/100
+      # beta_est[i, 2] <- trunc(sim_list$mean$g.gam[i]*100)/100
 
 
       # Epsilon
-      beta_est[i, 3] <- trunc(sim_list$mean$g.eps[i]*100)/100
+      # beta_est[i, 3] <- trunc(sim_list$mean$g.eps[i]*100)/100
 
 
     }
@@ -204,7 +204,7 @@ MakeGtab <- function(alpha){
     beta_df <- as.data.frame(beta_est)
     covs <- data.frame(cov =  as.character(levels(covs_use[order(covs_use)]))[1:10])
     beta_df <- dplyr::bind_cols(covs, beta_df)
-    beta_df[, 2:4] <- as.character(unlist(beta_df[, 2:4]))
+    # beta_df[, 2:4] <- as.character(unlist(beta_df[, 2:4]))
     names(beta_df)[1] <- ""
 
 beta_df
