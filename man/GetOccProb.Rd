@@ -4,12 +4,12 @@
 \alias{GetOccProb}
 \title{GetOccProb}
 \usage{
-GetOccProb(spp = NULL, alpha = NULL)
+GetOccProb(alpha = NULL)
 }
 \arguments{
-\item{spp}{Vector containing alpha codes for all species of interest}
-
 \item{alpha}{Four letter alpha code for species of interest}
+
+\item{spp}{Vector containing alpha codes for all species of interest}
 }
 \description{
 Predict annual probability of occupancy using parameter estimates from top model

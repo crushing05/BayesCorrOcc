@@ -2,10 +2,10 @@
 % Please edit documentation in R/figures.R
 \name{PostCheck}
 \alias{PostCheck}
-\title{PlotIndex}
+\title{PostCheck}
 \usage{
 PostCheck(alpha)
 }
 \description{
-Function to plot multi-species indices of range change
+Plot posterior predictive checks
 }
