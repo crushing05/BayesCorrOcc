@@ -52,7 +52,7 @@ RunMod <- function(spp = NULL, alpha = NULL, nI = 2000, nA = 1000, nC = 3, nT = 
                                      ### Parameters to monitor
                                      jags.params <- c("xpsi", "lambda", "betaT", "g",
                                                       "alpha0", "alpha1", "alpha2", "alpha3", "sigma.obs",
-                                                      "sigma.gam", "rho", "b", "omega")
+                                                      "sigma.gam", "rho", "b", "omega", "z")
 
 
                                      ### Initial values
@@ -111,7 +111,7 @@ RunMod <- function(spp = NULL, alpha = NULL, nI = 2000, nA = 1000, nC = 3, nT = 
     ### Parameters to monitor
     jags.params <- c("xpsi", "lambda", "betaT", "g",
                      "alpha0", "alpha1", "alpha2", "alpha3", "sigma.obs",
-                     "sigma.gam", "rho", "b", "omega")
+                     "sigma.gam", "rho", "b", "omega", "z")
 
 
     ### Initial values
