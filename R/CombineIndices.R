@@ -36,6 +36,12 @@ CombineIndices <- function(alpha = NULL, spp = NULL, group_name = NULL){
   }
 
   if(!is.null(spp)){
+    spp_test <- dir.exists("inst/output/indices")
+
+    if(!spp_test){
+      dir.create("inst/output/indices")
+    }
+
     dat <- readRDS(paste0("inst/output/", spp[1], "/bbs_data.rds"))
     years <- seq(from = dat$start_year, to = dat$end_year)
 
@@ -52,7 +58,7 @@ CombineIndices <- function(alpha = NULL, spp = NULL, group_name = NULL){
                                     LCI = quantile(ind, probs = 0.025),
                                     UCI = quantile(ind, probs = 0.975))
       ind_summ <- dplyr::mutate(ind_summ, ind = indices[jj])
-      if(jj == 1){indices2 <- ind_summ}else{indices2  <- dplyr::bind_rows(indices2 , ind_summ)}
+      if(jj == 1){indices2 <- ind_summ}else{indices2  <- suppressWarnings(dplyr::bind_rows(indices2 , ind_summ))}
     }
 
     write.csv(indices2, paste0("inst/output/indices/", group_name, ".csv"), row.names = FALSE)
