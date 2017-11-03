@@ -45,7 +45,7 @@ ppc <- function(spp = NULL, alpha = NULL){
             PSI[, 1, ii] <- plogis(jagam.mod$jags.data$X %*% mod$sims.list$b[ii,,1] +
                                      bio[,,1] %*% (mod$sims.list$g[ii,] * mod$sims.list$betaT[ii,]))
             p1 <- plogis(mod$sims.list$alpha0[ii] + mod$sims.list$alpha1[ii] * dat$wind[, 1] +
-                           mod$sims.list$alpha2[ii] * dat$nov[, 1] + mod$sims.list$omega[dat$obs[, 1]])
+                           mod$sims.list$alpha2[ii] * dat$nov[, 1] + mod$sims.list$alpha3[ii] * dat$twedt[, 1] + mod$sims.list$omega[dat$obs[, 1]])
 
             ### Estimate expected prob for each possible detection history|psi, p, xpsi
             exp_pr <- BayesCorrOcc::y_probs(psi = PSI[obs_hist$no_hist, 1, ii], xpsi = mod$sims.list$xpsi[ii,], p = p1[obs_hist$no_hist])
@@ -96,7 +96,7 @@ ppc <- function(spp = NULL, alpha = NULL){
               PSI[, t, ii] <- plogis(jagam.mod$jags.data$X %*% mod$sims.list$b[i,,t] +
                                        bio[,,t] %*% (mod$sims.list$g[i,] * mod$sims.list$betaT[i,]))
               p1 <- plogis(mod$sims.list$alpha0[ii] + mod$sims.list$alpha1[ii] * dat$wind[, t] +
-                             mod$sims.list$alpha2[ii] * dat$nov[, t] + mod$sims.list$omega[dat$obs[, t]])
+                             mod$sims.list$alpha2[ii] * dat$nov[, t] + mod$sims.list$alpha3[ii] * dat$twedt[, t] + mod$sims.list$omega[dat$obs[, t]])
 
               ### Estimate expected prob for each possible detection history|psi, p, xpsi
               exp_pr <- BayesCorrOcc::y_probs(psi = PSI[obs_hist$no_hist, t, ii], xpsi = mod$sims.list$xpsi[ii,], p = p1[obs_hist$no_hist])
@@ -172,7 +172,7 @@ ppc <- function(spp = NULL, alpha = NULL){
       PSI[, 1, i] <- plogis(jagam.mod$jags.data$X %*% mod$sims.list$b[i,,1] +
                               bio[,,1] %*% (mod$sims.list$g[i,] * mod$sims.list$betaT[i,]))
       p1 <- plogis(mod$sims.list$alpha0[i] + mod$sims.list$alpha1[i] * dat$wind[, 1] +
-                     mod$sims.list$alpha2[i] * dat$nov[, 1] + mod$sims.list$omega[dat$obs[, 1]])
+                     mod$sims.list$alpha2[i] * dat$nov[, 1] + mod$sims.list$alpha3[i] * dat$twedt[, 1] + mod$sims.list$omega[dat$obs[, 1]])
 
       ### Estimate expected prob for each possible detection history|psi, p, xpsi
       exp_pr <- BayesCorrOcc::y_probs(psi = PSI[obs_hist$no_hist, 1, i], xpsi = mod$sims.list$xpsi[i,], p = p1[obs_hist$no_hist])
@@ -223,7 +223,7 @@ ppc <- function(spp = NULL, alpha = NULL){
         PSI[, t, i] <- plogis(jagam.mod$jags.data$X %*% mod$sims.list$b[i,,t] +
                                 bio[,,t] %*% (mod$sims.list$g[i,] * mod$sims.list$betaT[i,]))
         p1 <- plogis(mod$sims.list$alpha0[i] + mod$sims.list$alpha1[i] * dat$wind[, t] +
-                       mod$sims.list$alpha2[i] * dat$nov[, t] + mod$sims.list$omega[dat$obs[, t]])
+                       mod$sims.list$alpha2[i] * dat$nov[, t] + mod$sims.list$alpha3[i] * dat$twedt[, t] + mod$sims.list$omega[dat$obs[, t]])
 
         ### Estimate expected prob for each possible detection history|psi, p, xpsi
         exp_pr <- BayesCorrOcc::y_probs(psi = PSI[obs_hist$no_hist, t, i], xpsi = mod$sims.list$xpsi[i,], p = p1[obs_hist$no_hist])

@@ -44,14 +44,14 @@ RunMod <- function(spp = NULL, alpha = NULL, nI = 2000, nA = 1000, nC = 3, nT = 
                                      ### Data for JAGS
                                      jags.data <- list(h = dat$h, nStops = dat$nStops, nRoutes = dat$nRoutes, nYears = dat$nYears,
                                                        Xp = dat$wind, nov = dat$nov, obs = dat$obs, nObs = max(dat$obs) - 1,
-                                                       Xclim = covs, nPred = dim(covs)[2]/2,
+                                                       Xclim = covs, nPred = dim(covs)[2]/2, twedt = dat$twedt,
                                                        X = jagam.mod$jags.data$X, S1 = jagam.mod$jags.data$S1, zero = jagam.mod$jags.data$zero,
                                                        mu = inits$psi.betas, se = inits$psi.se)
 
 
                                      ### Parameters to monitor
                                      jags.params <- c("xpsi", "lambda", "betaT", "g",
-                                                      "alpha0", "alpha1", "alpha2", "sigma.obs",
+                                                      "alpha0", "alpha1", "alpha2", "alpha3", "sigma.obs",
                                                       "sigma.gam", "rho", "b", "omega")
 
 
@@ -59,7 +59,8 @@ RunMod <- function(spp = NULL, alpha = NULL, nI = 2000, nA = 1000, nC = 3, nT = 
                                      y <- dat$h
                                      y[is.na(y)] <- rbinom(n = length(y[is.na(y)]), size = 1, prob = 0.5)
                                      jags.inits <- function(){list(y = y, z = apply(dat$h, c(1, 3), max),
-                                                                   alpha0 = inits$p.betas[1], alpha1 = rnorm(1), alpha2 = rnorm(1),
+                                                                   alpha0 = inits$p.betas[1], alpha1 = rnorm(1),
+                                                                   alpha2 = rnorm(1), alpha3 = rnorm(1),
                                                                    omega = c(rnorm(max(dat$obs) - 1), NA), sigma.obs = runif(1, 0, 5),
                                                                    betaT = inits$psi.betas,
                                                                    g = rbinom(dim(covs)[2], size = 1, prob = 0.5),
@@ -102,14 +103,14 @@ RunMod <- function(spp = NULL, alpha = NULL, nI = 2000, nA = 1000, nC = 3, nT = 
     ### Data for JAGS
     jags.data <- list(h = dat$h, nStops = dat$nStops, nRoutes = dat$nRoutes, nYears = dat$nYears,
                       Xp = dat$wind, nov = dat$nov, obs = dat$obs, nObs = max(dat$obs) - 1,
-                      Xclim = covs, nPred = dim(covs)[2]/2,
+                      Xclim = covs, nPred = dim(covs)[2]/2, twedt = dat$twedt,
                       X = jagam.mod$jags.data$X, S1 = jagam.mod$jags.data$S1, zero = jagam.mod$jags.data$zero,
                       mu = inits$psi.betas, se = inits$psi.se)
 
 
     ### Parameters to monitor
     jags.params <- c("xpsi", "lambda", "betaT", "g",
-                     "alpha0", "alpha1", "alpha2", "sigma.obs",
+                     "alpha0", "alpha1", "alpha2", "alpha3", "sigma.obs",
                      "sigma.gam", "rho", "b", "omega")
 
 
@@ -117,7 +118,8 @@ RunMod <- function(spp = NULL, alpha = NULL, nI = 2000, nA = 1000, nC = 3, nT = 
     y <- dat$h
     y[is.na(y)] <- rbinom(n = length(y[is.na(y)]), size = 1, prob = 0.5)
     jags.inits <- function(){list(y = y, z = apply(dat$h, c(1, 3), max),
-                                  alpha0 = inits$p.betas[1], alpha1 = rnorm(1), alpha2 = rnorm(1),
+                                  alpha0 = inits$p.betas[1], alpha1 = rnorm(1),
+                                  alpha2 = rnorm(1), alpha3 = rnorm(1),
                                   omega = c(rnorm(max(dat$obs) - 1), NA), sigma.obs = runif(1, 0, 5),
                                   betaT = inits$psi.betas,
                                   g = rbinom(dim(covs)[2], size = 1, prob = 0.5),

@@ -32,6 +32,7 @@ cat("
     alpha0 ~ dnorm(0, 0.1)T(-10, 10)
     alpha1 ~ dnorm(0, 0.1)T(-10, 10)
     alpha2 ~ dnorm(0, 0.1)T(-10, 10)
+    alpha3 ~ dnorm(0, 0.1)T(-10, 10)
 
     for(ii in 1:nObs){
       omega[ii] ~ dnorm(0, tau.obs)
@@ -81,7 +82,7 @@ cat("
     for (ii in 1:nRoutes) {
       ## Detection probability
         p[ii, 1, 1] <- 0
-        logit(p[ii, 2, 1]) <- alpha0 + alpha1 * Xp[ii, 1] + alpha2 * nov[ii, 1] + omega[obs[ii, 1]]
+        logit(p[ii, 2, 1]) <- alpha0 + alpha1 * Xp[ii, 1] + alpha2 * nov[ii, 1] +  alpha3 * twedt[ii, 1] + omega[obs[ii, 1]]
 
       ## Initial occupancy
         logit(psi[ii, 1]) <- inprod(X[ii,], b[, 1]) + inprod(Xclim[ii,,1], beta)
@@ -102,7 +103,7 @@ cat("
 
       for(tt in 2:nYears){
         p[ii, 1, tt] <- 0
-        logit(p[ii, 2, tt]) <- alpha0 + alpha1 * Xp[ii, tt] + alpha2 * nov[ii, tt] + omega[obs[ii, tt]]
+        logit(p[ii, 2, tt]) <- alpha0 + alpha1 * Xp[ii, tt] + alpha2 * nov[ii, tt] + alpha3 * twedt[ii, tt] +omega[obs[ii, tt]]
 
         ## Occupancy
         logit(psi[ii, tt]) <- inprod(X[ii,], b[, tt]) + inprod(Xclim[ii,,tt], beta)

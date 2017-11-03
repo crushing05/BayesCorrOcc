@@ -110,7 +110,7 @@ MakeBetatab <- function(alpha, nuisance = FALSE){
 
   }else{
     ## Data frame containing beta coeffecients and se for theta, theta', p, omega ----
-    beta_est <- matrix(NA, nrow = 4, ncol = 3)
+    beta_est <- matrix(NA, nrow = 5, ncol = 3)
     colnames(beta_est) <- c( "$p$", "$\\theta$", "$\\theta'$")
 
 
@@ -137,7 +137,11 @@ MakeBetatab <- function(alpha, nuisance = FALSE){
                             " (", trunc(sim_list$q2.5$alpha2*100)/100, " -- ",
                             trunc(sim_list$q97.5$alpha2*100)/100,")", sep = "")
 
-    beta_est[4, 1] <- paste(trunc(sim_list$mean$sigma.obs*100)/100,
+    beta_est[4, 1] <- paste(trunc(sim_list$mean$alpha3*100)/100,
+                            " (", trunc(sim_list$q2.5$alpha3*100)/100, " -- ",
+                            trunc(sim_list$q97.5$alpha3*100)/100,")", sep = "")
+
+    beta_est[5, 1] <- paste(trunc(sim_list$mean$sigma.obs*100)/100,
                             " (", trunc(sim_list$q2.5$sigma.obs*100)/100, " -- ",
                             trunc(sim_list$q97.5$sigma.obs*100)/100,")", sep = "")
 

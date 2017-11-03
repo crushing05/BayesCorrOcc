@@ -44,7 +44,7 @@ CombineIndices <- function(alpha = NULL, spp = NULL, group_name = NULL){
         temp <- readRDS(paste0('inst/output/', spp[ii], '/indices_post.rds'))
         temp_df <- data.frame(Species = spp[ii], ind = c(temp[jj,,]),
                               Year = rep(years, each = dim(temp)[2]))
-        if(ii == 1){ind_df <- temp_df}else{ind_df <- dplyr::bind_rows(ind_df, temp_df)}
+        if(ii == 1){ind_df <- temp_df}else{ind_df <- suppressWarnings(dplyr::bind_rows(ind_df, temp_df))}
       }
       ind_summ <- dplyr::group_by(ind_df, Year)
       ind_summ <- dplyr::summarise(ind_summ,
