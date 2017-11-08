@@ -148,7 +148,7 @@ MakeBetatab <- function(alpha, nuisance = FALSE){
 
     ## Covert to data frame, add intercept, covert to character, replace NA with "-"
     beta_df <- as.data.frame(beta_est)
-    covs <- data.frame(cov = c("Intercept", "Novice Observer", "Wind", "/sigma^2_{Obs}"))
+    covs <- data.frame(cov = c("Intercept", "Novice Observer", "Wind", "Twedt", "/sigma^2_{Obs}"))
     beta_df <- dplyr::bind_cols(covs, beta_df)
     beta_df[, 2:4] <- as.character(unlist(beta_df[, 2:4]))
     beta_df[is.na(beta_df)] <- "-"
