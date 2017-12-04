@@ -44,8 +44,20 @@ cat("
 
 
     ## Spatial correlation priors
-    xpsi[1] ~ dunif(0, 1)
-    xpsi[2] ~ dunif(0, 1)
+    for(tt in 1:nYears){
+      logit(xpsi[tt, 1]) ~ dnorm(mu.xpsi[1], tau.xpsi)
+      logit(xpsi[tt, 2]) ~ dnorm(mu.xpsi[2], tau.xpsi)
+      pi[tt] <- xpsi[tt, 1]/(xpsi[tt, 1] + (1 - xpsi[tt, 2]))
+    }
+
+    mean.xpsi[1] ~ dunif(0, 1)
+    mu.xpsi[1] <- log(mean.xpsi[1]) - log(1 - mean.xpsi[1])
+
+    mean.xpsi[2] ~ dunif(0, 1)
+    mu.xpsi[2] <- log(mean.xpsi[2]) - log(1 - mean.xpsi[2])
+
+    tau.xpsi <- pow(sigma.xpsi, -2)
+    sigma.xpsi ~ dunif(0, 10)
 
 
     #### GAM priors from mgcv::jagam()
@@ -87,17 +99,20 @@ cat("
       ## Initial occupancy
         logit(psi[ii, 1]) <- inprod(X[ii,], b[, 1]) + inprod(Xclim[ii,,1], beta)
         z[ii, 1] ~ dbern(psi[ii, 1])
-
+        z.new[ii, 1] ~ dbern(psi[ii, 1])
 
       ##  y: local availability at stop 1 -- 0 = locally unavailable,  1 = locally available
-        y[ii, 1, 1] ~ dbern(xpsi[1]/(xpsi[1] + (1 - xpsi[2])))
+        y[ii, 1, 1] ~ dbern(pi[1])
+        y.new[ii, 1, 1] ~ dbern(pi[1])
         h[ii, 1, 1] ~ dbern(p[ii, (z[ii, 1] * y[ii, 1, 1] + 1), 1])
-
+        h.new[ii, 1, 1] ~ dbern(p[ii, (z.new[ii, 1] * y.new[ii, 1, 1] + 1), 1])
 
       ## Availability at stops 2-nStops
         for (jj in 2:nStops) {
-          y[ii, jj, 1] ~ dbern(xpsi[(z[ii, 1] * y[ii, jj - 1, 1] + 1)])
+          y[ii, jj, 1] ~ dbern(xpsi[1, (z[ii, 1] * y[ii, jj - 1, 1] + 1)])
+          y.new[ii, jj, 1] ~ dbern(xpsi[1, (z.new[ii, 1] * y.new[ii, jj - 1, 1] + 1)])
           h[ii, jj, 1] ~ dbern(p[ii, (z[ii, 1] * y[ii, jj, 1] + 1), 1])
+          h.new[ii, jj, 1] ~ dbern(p[ii, (z.new[ii, 1] * y.new[ii, jj, 1] + 1), 1])
         } # jj
 
 
@@ -108,20 +123,37 @@ cat("
         ## Occupancy
         logit(psi[ii, tt]) <- inprod(X[ii,], b[, tt]) + inprod(Xclim[ii,,tt], beta)
         z[ii, tt] ~ dbern(psi[ii, tt])
-
+        z.new[ii, tt] ~ dbern(psi[ii, tt])
 
         ##  y: local availability at stop 1 -- 0 = locally unavailable,  1 = locally available
-        y[ii, 1, tt] ~ dbern(xpsi[1]/(xpsi[1] + (1 - xpsi[2])))
+        y[ii, 1, tt] ~ dbern(pi[tt])
+        y.new[ii, 1, tt] ~ dbern(pi[tt])
         h[ii, 1, tt] ~ dbern(p[ii, (z[ii, tt] * y[ii, 1, tt] + 1), tt])
-
+        h.new[ii, 1, tt] ~ dbern(p[ii, (z.new[ii, tt] * y.new[ii, 1, tt] + 1), tt])
 
         ## Availability at stops 2-nStops
         for (jj in 2:nStops) {
-          y[ii, jj, tt] ~ dbern(xpsi[(z[ii, tt] * y[ii, jj - 1, tt] + 1)])
-          h[ii, jj, tt] ~ dbern(p[ii,( z[ii, tt] * y[ii, jj, tt] + 1), tt])
+          y[ii, jj, tt] ~ dbern(xpsi[tt, (z[ii, tt] * y[ii, jj - 1, tt] + 1)])
+          y.new[ii, jj, tt] ~ dbern(xpsi[tt, (z.new[ii, tt] * y.new[ii, jj - 1, tt] + 1)])
+          h[ii, jj, tt] ~ dbern(p[ii, (z[ii, tt] * y[ii, jj, tt] + 1), tt])
+          h.new[ii, jj, tt] ~ dbern(p[ii, (z.new[ii, tt] * y.new[ii, jj, tt] + 1), tt])
         } # jj
       } # tt
     } # ii
+
+    for(tt in 1:nYears){
+      sum.z[tt] <- sum(z[1:nRoutes, tt])
+      sum.z.new[tt] <- sum(z.new[1:nRoutes, tt])
+
+      fit.z[tt] <- pow((sum.z[tt] - sum(psi[1:nRoutes, tt])), 2)/sum(psi[1:nRoutes, tt])
+      fit.z.new[tt] <- pow((sum.z.new[tt] - sum(psi[1:nRoutes, tt])), 2)/sum(psi[1:nRoutes, tt])
+
+      mu.y[tt] <- mean(y[1:nRoutes, 1:nStops, tt])
+      mu.y.new[tt] <- mean(y.new[1:nRoutes, 1:nStops, tt])
+
+      fit.y[tt] <- pow((mu.y[tt] - pi[tt]), 2)/pi[tt]
+      fit.y.new[tt] <- pow((mu.y.new[tt] - pi[tt]), 2)/pi[tt]
+    }
 
 } # End model
     ", fill=TRUE)

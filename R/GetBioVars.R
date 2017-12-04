@@ -85,7 +85,7 @@ GetBioVars <- function(alpha, index = c(1, 2, 8, 12, 18),
   }
 
   write.csv(clim_scale,
-            paste0("inst/output/", dat$alpha, "/clim_scale.csv"),
+            paste0("inst/output/", alpha, "/clim_scale.csv"),
             row.names = FALSE)
 
   ### Add squared climate variables
@@ -100,6 +100,6 @@ GetBioVars <- function(alpha, index = c(1, 2, 8, 12, 18),
     biovars <- abind::abind(biovars, tmp, along = 3)
   }
 
-  saveRDS(biovars, file = paste0("inst/output/", dat$alpha, "/biovars.rds"))
+  saveRDS(biovars, file = paste0("inst/output/", alpha, "/biovars.rds"))
 }
 
