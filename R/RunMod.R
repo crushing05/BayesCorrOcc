@@ -4,7 +4,7 @@
 #' @param alpha alpha code for species of interest; if NULL, runs model in parallel for all species
 #' @export
 
-RunMod <- function(spp = NULL, alpha = NULL, nI = 25000, nA = 7500, nC = 2, nT = 10, Parallel = FALSE){
+RunMod <- function(spp = NULL, alpha = NULL, nI = 25000, nA = 7500, nC = 2, nT = 10, cores = 50, Parallel = FALSE){
   if(!is.null(spp)){
     ## Check if model has already been run for species
     spp_run <- NULL
@@ -17,7 +17,9 @@ RunMod <- function(spp = NULL, alpha = NULL, nI = 25000, nA = 7500, nC = 2, nT =
       return(spp)
     }else{
       ### Register core
-      cores <- parallel::detectCores()
+      if(is.null(cores)){
+        cores <- parallel::detectCores()
+      }
       if(length(spp_run) < cores) cores <- length(spp_run)
       doParallel::registerDoParallel(cores = cores)
 
