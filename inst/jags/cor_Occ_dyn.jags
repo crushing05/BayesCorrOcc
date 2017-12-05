@@ -44,8 +44,10 @@
 
     ## Spatial correlation priors
     for(tt in 1:nYears){
-      logit(xpsi[tt, 1]) ~ dnorm(mu.xpsi[1], tau.xpsi)
-      logit(xpsi[tt, 2]) ~ dnorm(mu.xpsi[2], tau.xpsi)
+      lxpsi[tt, 1] ~ dnorm(mu.xpsi[1], tau.xpsi)
+      logit(xpsi[tt, 1]) <- lxpsi[tt, 1]
+      lxpsi[tt, 2] ~ dnorm(mu.xpsi[2], tau.xpsi)
+      logit(xpsi[tt, 2]) <- lxpsi[tt, 2]
       pi[tt] <- xpsi[tt, 1]/(xpsi[tt, 1] + (1 - xpsi[tt, 2]))
     }
 
