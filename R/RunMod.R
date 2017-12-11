@@ -66,7 +66,7 @@ RunMod <- function(spp = NULL, alpha = NULL, nI = 25000, nA = 7500, nC = 2, nT =
                                                                    omega = c(rnorm(max(dat$obs) - 1), NA), sigma.obs = runif(1, 0, 5),
                                                                    betaT = inits$psi.betas,
                                                                    g = rbinom(dim(covs)[2], size = 1, prob = 0.5),
-                                                                   xpsi = plogis(inits$th.betas),
+                                                                   #xpsi = plogis(inits$th.betas),
                                                                    b = matrix(rep(jagam.mod$jags.ini$b, each = 43), ncol = 43, byrow = TRUE),
                                                                    lambda = jagam.mod$jags.ini$lambda)}
 
@@ -125,7 +125,7 @@ RunMod <- function(spp = NULL, alpha = NULL, nI = 25000, nA = 7500, nC = 2, nT =
                                   omega = c(rnorm(max(dat$obs) - 1), NA), sigma.obs = runif(1, 0, 5),
                                   betaT = inits$psi.betas,
                                   g = rbinom(dim(covs)[2], size = 1, prob = 0.5),
-                                  xpsi = plogis(inits$th.betas),
+                                  #xpsi = plogis(inits$th.betas),
                                   b = matrix(rep(jagam.mod$jags.ini$b, each = 43), ncol = 43, byrow = TRUE),
                                   lambda = jagam.mod$jags.ini$lambda)}
 
