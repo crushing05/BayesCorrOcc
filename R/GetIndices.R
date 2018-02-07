@@ -34,19 +34,19 @@ GetIndices <- function(spp = NULL, alpha = NULL){
                                       for(tt in 1:dat$nYears){
                                         indices[1,,tt] <- apply(occ$occ[,,tt], 1, mean)
 
-                                        indices[2,,tt] <- apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.99, coord = occ$xy$lat, limit = "south"))
+                                        indices[2,,tt] <- apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.999, coord = occ$xy$lat, limit = "south"))
 
                                         indices[3,,tt] <- apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.75, coord = occ$xy$lat, limit = "south"))
 
-                                        indices[4,,tt] <- apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.99, coord = occ$xy$lat, limit = "north"))
+                                        indices[4,,tt] <- apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.999, coord = occ$xy$lat, limit = "north"))
 
                                         indices[5,,tt] <- apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.75, coord = occ$xy$lat, limit = "north"))
 
-                                        indices[6,,tt] <- apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.99, coord = occ$xy$lon, limit = "west"))
+                                        indices[6,,tt] <- apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.999, coord = occ$xy$lon, limit = "west"))
 
                                         indices[7,,tt] <- apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.75, coord = occ$xy$lon, limit = "west"))
 
-                                        indices[8,,tt] <- apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.99, coord = occ$xy$lon, limit = "east"))
+                                        indices[8,,tt] <- apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.999, coord = occ$xy$lon, limit = "east"))
 
                                         indices[9,,tt] <- apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.75, coord = occ$xy$lon, limit = "east"))
 
@@ -74,19 +74,19 @@ GetIndices <- function(spp = NULL, alpha = NULL){
     for(tt in 1:dat$nYears){
       indices[1,,tt] <- apply(occ$occ[,,tt], 1, mean)
 
-      indices[2,,tt] <- apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.99, coord = occ$xy$lat, limit = "south"))
+      indices[2,,tt] <- apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.999, coord = occ$xy$lat, limit = "south"))
 
       indices[3,,tt] <- apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.75, coord = occ$xy$lat, limit = "south"))
 
-      indices[4,,tt] <- apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.99, coord = occ$xy$lat, limit = "north"))
+      indices[4,,tt] <- apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.999, coord = occ$xy$lat, limit = "north"))
 
       indices[5,,tt] <- apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.75, coord = occ$xy$lat, limit = "north"))
 
-      indices[6,,tt] <- apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.99, coord = occ$xy$lon, limit = "west"))
+      indices[6,,tt] <- apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.999, coord = occ$xy$lon, limit = "west"))
 
       indices[7,,tt] <- apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.75, coord = occ$xy$lon, limit = "west"))
 
-      indices[8,,tt] <- apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.99, coord = occ$xy$lon, limit = "east"))
+      indices[8,,tt] <- apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.999, coord = occ$xy$lon, limit = "east"))
 
       indices[9,,tt] <- apply(occ$occ[,,tt], 1, function(x) range.limit(cell.probs = x, prob = 0.75, coord = occ$xy$lon, limit = "east"))
 

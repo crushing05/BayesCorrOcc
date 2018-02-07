@@ -49,7 +49,7 @@ cat("
       logit(xpsi[tt, 1]) <- lxpsi[tt, 1]
       lxpsi[tt, 2] ~ dnorm(mu.xpsi[2], tau.xpsi)
       logit(xpsi[tt, 2]) <- lxpsi[tt, 2]
-      pi[tt] <- xpsi[tt, 1]/(xpsi[tt, 1] + (1 - xpsi[tt, 2]))
+      pi[tt] ~dunif(0, 1)#<- xpsi[tt, 1]/(xpsi[tt, 1] + (1 - xpsi[tt, 2]))
     }
 
     mean.xpsi[1] ~ dunif(0, 1)
@@ -60,7 +60,9 @@ cat("
 
     tau.xpsi <- pow(sigma.xpsi, -2)
     sigma.xpsi ~ dunif(0, 10)
-
+    # pi ~ dunif(0, 1)
+    # xpsi[1] ~ dunif(0,1)
+    # xpsi[2] ~ dunif(0, 1)
 
     #### GAM priors from mgcv::jagam()
 
@@ -143,19 +145,19 @@ cat("
       } # tt
     } # ii
 
-    for(tt in 1:nYears){
-      sum.z[tt] <- sum(z[1:nRoutes, tt])
-      sum.z.new[tt] <- sum(z.new[1:nRoutes, tt])
-
-      fit.z[tt] <- pow((sum.z[tt] - sum(psi[1:nRoutes, tt])), 2)/sum(psi[1:nRoutes, tt])
-      fit.z.new[tt] <- pow((sum.z.new[tt] - sum(psi[1:nRoutes, tt])), 2)/sum(psi[1:nRoutes, tt])
-
-      mu.y[tt] <- mean(y[1:nRoutes, 1:nStops, tt])
-      mu.y.new[tt] <- mean(y.new[1:nRoutes, 1:nStops, tt])
-
-      fit.y[tt] <- pow((mu.y[tt] - pi[tt]), 2)/pi[tt]
-      fit.y.new[tt] <- pow((mu.y.new[tt] - pi[tt]), 2)/pi[tt]
-    }
+    # for(tt in 1:nYears){
+    #   sum.z[tt] <- sum(z[1:nRoutes, tt])
+    #   sum.z.new[tt] <- sum(z.new[1:nRoutes, tt])
+    #
+    #   fit.z[tt] <- pow((sum.z[tt] - sum(psi[1:nRoutes, tt])), 2)/sum(psi[1:nRoutes, tt])
+    #   fit.z.new[tt] <- pow((sum.z.new[tt] - sum(psi[1:nRoutes, tt])), 2)/sum(psi[1:nRoutes, tt])
+    #
+    #   mu.y[tt] <- mean(y[1:nRoutes, 1:nStops, tt])
+    #   mu.y.new[tt] <- mean(y.new[1:nRoutes, 1:nStops, tt])
+    #
+    #   fit.y[tt] <- pow((mu.y[tt] - pi[tt]), 2)/pi[tt]
+    #   fit.y.new[tt] <- pow((mu.y.new[tt] - pi[tt]), 2)/pi[tt]
+    # }
 
 } # End model
     ", fill=TRUE)

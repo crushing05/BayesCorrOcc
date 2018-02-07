@@ -48,15 +48,18 @@ CombineIndices <- function(alpha = NULL, spp = NULL, group_name = NULL){
     for(jj in 1:11){
       for(ii in 1:length(spp)){
         temp <- readRDS(paste0('inst/output/', spp[ii], '/indices_post.rds'))
-        temp_df <- data.frame(Species = spp[ii], ind = c(temp[jj,,]),
-                              Year = rep(years, each = dim(temp)[2]))
+        temp_df <- data.frame(Species = spp[ii], est = c(temp[jj,,]),
+                              Year = rep(years, each = dim(temp)[2]), it = rep(seq(from = 1, to = dim(temp)[2]), dim(temp)[3]))
+        temp_df <- dplyr::group_by(temp_df, it)
+        temp_df <- dplyr::mutate(temp_df, est2 =  est - est[1] + 1)
+        temp_df <- dplyr::ungroup(temp_df)
         if(ii == 1){ind_df <- temp_df}else{ind_df <- suppressWarnings(dplyr::bind_rows(ind_df, temp_df))}
       }
       ind_summ <- dplyr::group_by(ind_df, Year)
       ind_summ <- dplyr::summarise(ind_summ,
-                                    Est = mean(ind),
-                                    LCI = quantile(ind, probs = 0.025),
-                                    UCI = quantile(ind, probs = 0.975))
+                                    Est = mean(est2),
+                                    LCI = quantile(est2, probs = 0.025),
+                                    UCI = quantile(est2, probs = 0.975))
       ind_summ <- dplyr::mutate(ind_summ, ind = indices[jj])
       if(jj == 1){indices2 <- ind_summ}else{indices2  <- suppressWarnings(dplyr::bind_rows(indices2 , ind_summ))}
     }
