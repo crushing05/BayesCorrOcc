@@ -4,7 +4,7 @@
 #' @param alpha alpha code for species of interest; if NULL, runs model in parallel for all species
 #' @export
 
-RunMod <- function(spp = NULL, alpha = NULL, nI = 30000, nA = 7500, nC = 2, nT = 50, cores = 50, Parallel = FALSE){
+RunMod <- function(spp = NULL, alpha = NULL, nI = 50000, nA = 10000, nC = 2, nT = 50, cores = 50, Parallel = FALSE){
   if(!is.null(spp)){
     ## Check if model has already been run for species
     spp_run <- NULL
@@ -52,7 +52,7 @@ RunMod <- function(spp = NULL, alpha = NULL, nI = 30000, nA = 7500, nC = 2, nT =
 
 
                                      ### Parameters to monitor
-                                     jags.params <- c("xpsi", "lambda", "betaT", "g",
+                                     jags.params <- c("xpsi", "pi", "lambda", "betaT", "g",
                                                       "alpha0", "alpha1", "alpha2", "alpha3", "sigma.obs",
                                                       "sigma.gam", "rho", "b", "omega", "z")
 
@@ -75,7 +75,7 @@ RunMod <- function(spp = NULL, alpha = NULL, nI = 30000, nA = 7500, nC = 2, nT =
                                      mod <- system.file("jags", "cor_Occ_dyn.jags", package = "BayesCorrOcc")
                                      jags.fit <- jagsUI::jags(data = jags.data, parameters.to.save = jags.params,
                                                               inits = jags.inits, model.file = mod,
-                                                              n.chains = nC, n.iter = nI, n.adapt = nA, n.burnin = nA/2, n.thin = nT,
+                                                              n.chains = nC, n.iter = nI, n.adapt = nA, n.burnin = nA, n.thin = nT,
                                                               parallel = Parallel, verbose = FALSE)
 
                                      ### Save output
@@ -133,7 +133,7 @@ RunMod <- function(spp = NULL, alpha = NULL, nI = 30000, nA = 7500, nC = 2, nT =
     mod <- system.file("jags", "cor_Occ_dyn.jags", package = "BayesCorrOcc")
     jags.fit <- jagsUI::jags(data = jags.data, parameters.to.save = jags.params,
                              inits = jags.inits, model.file = mod,
-                             n.chains = nC, n.iter = nI, n.adapt = nA, n.burnin = nA/2, n.thin = nT,
+                             n.chains = nC, n.iter = nI, n.adapt = nA, n.burnin = nA, n.thin = nT,
                              parallel = Parallel, verbose = FALSE)
 
     ### Save output
